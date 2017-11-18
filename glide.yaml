@@ -1,5 +1,4 @@
 package: gopipe
 import:
-- package: fmt
-- package: log
 - package: github.com/sirupsen/logrus
+  version: ^1.0.3
