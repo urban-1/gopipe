@@ -2,3 +2,5 @@ package: gopipe
 import:
 - package: github.com/sirupsen/logrus
   version: ^1.0.3
+- package: github.com/urfave/cli
+  version: ^1.20.0
