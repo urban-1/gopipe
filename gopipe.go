@@ -33,6 +33,9 @@ func main() {
         },
     }
 
+    ch1 := make(chan core.Event)
+    ch2 := make(chan core.Event)
+
     app.Action = func(c *cli.Context) error {
         if (c.String("config") == "") {
             const msg = "You need to provide config file..."
@@ -46,18 +49,28 @@ func main() {
         raw, err := ioutil.ReadFile(c.String("config"))
         if err != nil {
             log.Error(err.Error())
-            cli.NewExitError(err.Error(), -2)
+            return cli.NewExitError(err.Error(), -2)
         }
 
         var CFG core.Config
-        json.Unmarshal(raw, &CFG)
-        log.Info(CFG["in"].(core.Config)["module"])
+        if err := json.Unmarshal(raw, &CFG); err != nil {
+            log.Error(err.Error())
+            return cli.NewExitError(err.Error(), -2)
+        }
+
+        in, ok := CFG["in"].(core.Config)
+        if !ok {
+            log.Error("You need to define 'in' section in your config")
+            return cli.NewExitError("You need to define 'in' section in your config", -2)
+        }
+
+        log.Info(in["module"])
 
         e := core.NewDataEvent()
         reg := core.GetRegistryInstance()
         log.Info(len(reg))
         log.Info(e.Type())
-        reg["TCPInput"](nil, nil, nil)
+        reg["TCPInput"](ch1, ch2, in)
         return nil
     }
 
