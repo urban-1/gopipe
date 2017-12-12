@@ -1,5 +1,10 @@
 package core
 
+import (
+    "encoding/json"
+    log "github.com/sirupsen/logrus"
+)
+
 const (
     EVENT_STR = iota
     EVENT_DATA = iota
@@ -31,6 +36,21 @@ func NewDataEvent() *DataEvent {
     return &DataEvent{Event{EVENT_DATA}, nil}
 }
 
+
+func (e *DataEvent) toString() string {
+    b, err := json.Marshal(e.Data)
+    if err != nil {
+        log.Error("Invalid JSON while converting event to string...")
+        return ""
+    }
+
+    return string(b)
+}
+
 func NewStrEvent() *StrEvent {
     return &StrEvent{Event{EVENT_STR}, ""}
+}
+
+func (e *StrEvent) toString() string {
+    return e.Message
 }

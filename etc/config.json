@@ -9,6 +9,11 @@
         "listen": "0.0.0.0",
         "port": 9092
     },
+    "proc": [
+        {
+            "module": "print"
+        }
+    ],
     "out": {
         "module": "CSVOutput",
         "rotate_seconds": 60,

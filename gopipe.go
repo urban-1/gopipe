@@ -10,6 +10,8 @@ import (
 
     "gopipe/core"
     _ "gopipe/input"
+    //_ "gopipe/output"
+    _ "gopipe/proc"
 )
 
 func init() {
