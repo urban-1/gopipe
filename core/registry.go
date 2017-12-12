@@ -4,12 +4,14 @@ import (
     log "github.com/sirupsen/logrus"
 )
 
-// Create singleton registry
-var registry map[string]func(chan Event, chan Event, map[string]interface{})
+type Registry = map[string]func(chan Event, chan Event, map[string]interface{}) Component
 
-func GetRegistryInstance() map[string]func(chan Event, chan Event, map[string]interface{}) {
+// Create singleton registry
+var registry Registry
+
+func GetRegistryInstance() Registry {
     if (registry == nil) {
-        registry = make(map[string]func(chan Event, chan Event, map[string]interface{}))
+        registry = make(Registry)
         log.Info("Created...")
     }
 

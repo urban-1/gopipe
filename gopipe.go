@@ -4,13 +4,14 @@ import (
     "os"
     "encoding/json"
     "io/ioutil"
+    "time"
 
     "github.com/urfave/cli"
     log "github.com/sirupsen/logrus"
 
     "gopipe/core"
     _ "gopipe/input"
-    //_ "gopipe/output"
+    _ "gopipe/output"
     _ "gopipe/proc"
 )
 
@@ -21,6 +22,26 @@ func init() {
 }
 
 
+func instanceFromConfig(cfg core.Config, ch1 chan core.Event, ch2 chan core.Event, reg core.Registry) (core.Component, error) {
+
+    module_name, ok := cfg["module"].(string)
+    if !ok {
+        log.Error("Missing 'module' (module name) from configuration")
+        return nil, cli.NewExitError("Missing 'module' (module name) from configuration", -3)
+    }
+
+    log.Info("Loading ", module_name)
+
+    mod_constructor, ok := reg[module_name]
+    if !ok {
+        log.Error("Unknown module '", module_name, "'")
+        return nil, cli.NewExitError("Unknown module '" + module_name + "'", -4)
+    }
+
+    log.Info("Loaded!")
+
+    return mod_constructor(ch1, ch2, cfg), nil
+}
 
 func main() {
     app := cli.NewApp()
@@ -33,16 +54,22 @@ func main() {
             Name:  "config, c",
             Usage: "Load configuration from `FILE` (required)",
         },
+        cli.BoolFlag{
+            Name:  "debug, d",
+            Usage: "Enable debug mode",
+        },
     }
 
-    ch1 := make(chan core.Event)
-    ch2 := make(chan core.Event)
 
     app.Action = func(c *cli.Context) error {
         if (c.String("config") == "") {
             const msg = "You need to provide config file..."
             log.Error(msg)
             return cli.NewExitError(msg, -1)
+        }
+
+        if c.Bool("debug") {
+            log.SetLevel(log.DebugLevel)
         }
 
         DN , _ := os.Getwd()
@@ -60,19 +87,83 @@ func main() {
             return cli.NewExitError(err.Error(), -2)
         }
 
+        // Load registry
+        reg := core.GetRegistryInstance()
+
+        // In module
         in, ok := CFG["in"].(core.Config)
         if !ok {
             log.Error("You need to define 'in' section in your config")
             return cli.NewExitError("You need to define 'in' section in your config", -2)
         }
 
-        log.Info(in["module"])
+        // Store our modules
+        var mods []core.Component
+        // Store all channels
+        var chans []chan core.Event
 
-        e := core.NewDataEvent()
-        reg := core.GetRegistryInstance()
-        log.Info(len(reg))
-        log.Info(e.Type())
-        reg["TCPInput"](ch1, ch2, in)
+        // Create the first Q (ouput)
+        tmpch := make(chan core.Event)
+        chans = append(chans, tmpch)
+
+        // Append in module
+        tmp, err := instanceFromConfig(in, nil, tmpch, reg)
+        if err != nil {
+            return err
+        }
+        mods = append(mods, tmp)
+
+        proc, ok := CFG["proc"].([]interface{})
+        for index, cfg := range proc {
+            // Create a new one for every output
+
+            chans = append(chans, make(chan core.Event))
+
+            log.Info("Loading processor module ", index)
+            tmp, err = instanceFromConfig(
+                cfg.(core.Config),
+                chans[len(chans)-2],
+                chans[len(chans)-1],
+                reg)
+
+            if err != nil {
+                return err
+            }
+            mods = append(mods, tmp)
+        }
+
+        // Output module
+        out, ok := CFG["out"].(core.Config)
+        if !ok {
+            log.Error("You need to define 'out' section in your config")
+            return cli.NewExitError("You need to define 'out' section out your config", -2)
+        }
+        tmp, err = instanceFromConfig(out, chans[len(chans)-1], nil, reg)
+        if err != nil {
+            return err
+        }
+        mods = append(mods, tmp)
+        log.Info("Created ", len(chans), " channels")
+
+        // Start all (reverse order)
+        for _, mod := range mods {
+            go mod.Run()
+        }
+
+        for {
+            // for _, ch := range chans {
+            //     <-ch
+            // }
+            time.Sleep(time.Duration(100)*time.Millisecond)
+            log.Warn("All Channels Empty")
+        }
+
+
+
+        // e := core.NewDataEvent()
+        // log.Info(len(reg))
+        // log.Info(e.ToString())
+        // reg["TCPInput"](ch1, ch2, in)
         return nil
     }
 

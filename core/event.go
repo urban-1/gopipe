@@ -10,34 +10,31 @@ const (
     EVENT_DATA = iota
 )
 
-type Event struct {
-    mode int
-}
 
-func (e *Event) Type() int {
-    return e.mode
+type Event interface {
+    Type() int
+    ToString() string
 }
 
 type DataEvent struct {
-    Event
+    mode int
     Data map[string]interface{}
 }
 
 type StrEvent struct {
-    Event
+    mode int
     Message string
 }
 
-func NewDataEvent() *DataEvent {
+func NewDataEvent(data map[string]interface{}) *DataEvent {
     // m := new(Event)
     // m.Mode = TYPE_STR
     // m.Message = ""
     // return m
-    return &DataEvent{Event{EVENT_DATA}, nil}
+    return &DataEvent{EVENT_DATA, data}
 }
 
-
-func (e *DataEvent) toString() string {
+func (e *DataEvent) ToString() string {
     b, err := json.Marshal(e.Data)
     if err != nil {
         log.Error("Invalid JSON while converting event to string...")
@@ -47,10 +44,20 @@ func (e *DataEvent) toString() string {
     return string(b)
 }
 
-func NewStrEvent() *StrEvent {
-    return &StrEvent{Event{EVENT_STR}, ""}
+func (e *DataEvent) Type() int {
+    return e.mode
 }
 
-func (e *StrEvent) toString() string {
+
+
+func NewStrEvent(s string) *StrEvent {
+    return &StrEvent{EVENT_STR, s}
+}
+
+func (e *StrEvent) ToString() string {
     return e.Message
+}
+
+func (e *StrEvent) Type() int {
+    return e.mode
 }

@@ -11,11 +11,11 @@
     },
     "proc": [
         {
-            "module": "print"
+            "module": "LogProc"
         }
     ],
     "out": {
-        "module": "CSVOutput",
+        "module": "NullOutput",
         "rotate_seconds": 60,
         "file_name_format": "gopipe-%Y%M%d-%H%m%s.csv",
         "separator": ","
