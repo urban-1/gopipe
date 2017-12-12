@@ -3,6 +3,7 @@ package input
 import (
     "net"
     "os"
+    "bufio"
     "strconv"
     "gopipe/core"
     log "github.com/sirupsen/logrus"
@@ -60,6 +61,13 @@ func (p *TCPInput) Run() {
 
 func (p *TCPInput) handleRequest(conn net.Conn) {
     // Make a buffer to hold incoming data.
+    reader := bufio.NewReader(conn)
+    lineData, isPrefix, err := reader.ReadLine()
+	if err == io.EOF {
+		log.Println("server disconnected: " + conn.RemoteAddr().String())
+		break
+	}
+
     buf := make([]byte, 1024)
     // Read the incoming connection into the buffer.
     reqLen, err := conn.Read(buf)
