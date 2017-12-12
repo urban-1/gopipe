@@ -11,32 +11,29 @@ func init() {
 }
 
 type LogProc struct {
-    config core.Config
-    inQ chan core.Event
-    outQ chan core.Event
-    mustStop bool
+    core.ComponentBase
 }
 
 func NewLogProc(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
     log.Info("Creating LogProc")
-    return &LogProc{cfg, inQ, outQ, false}
+    return &LogProc{*core.NewComponentBase(inQ, outQ, cfg)}
 }
 
 func (p *LogProc) Stop() {
-    p.mustStop = true
+    p.MustStop = true
 }
 
 func (p *LogProc) Run() {
     log.Debug("LogProc Starting ... ")
-    p.mustStop = false
-    for !p.mustStop {
+    p.MustStop = false
+    for !p.MustStop {
         log.Debug("LogProc Reading")
-        e := <- p.inQ
+        e := <- p.InQ
         log.Info("Log Proc " + e.ToString())
 
-        if p.outQ != nil {
+        if p.OutQ != nil {
             log.Debug("LogProc Pushing")
-            p.outQ<-e
+            p.OutQ<-e
         }
     }
 

@@ -14,25 +14,21 @@ func init() {
 }
 
 type TCPInput struct {
-    config core.Config
-    inQ chan core.Event
-    outQ chan core.Event
-    mustStop bool
+    core.ComponentBase
     host string
     port uint32
 }
 
 func NewTCPInput(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
     log.Info("Creating TCPInput")
-    m := TCPInput{
-        cfg, inQ, outQ, false,
+    m := TCPInput{*core.NewComponentBase(inQ, outQ, cfg),
         cfg["listen"].(string), uint32(cfg["port"].(float64))}
 
     return &m
 }
 
 func (p *TCPInput) Stop() {
-    p.mustStop = true
+    p.MustStop = true
 }
 
 func (p *TCPInput) Run() {
@@ -49,7 +45,7 @@ func (p *TCPInput) Run() {
     defer l.Close()
 
     log.Info("Listening on " + p.host+":"+pstr)
-    for {
+    for !p.MustStop {
         // Listen for an incoming connection.
         conn, err := l.Accept()
         if err != nil {
@@ -74,7 +70,7 @@ func (p *TCPInput) handleRequest(conn net.Conn) {
     // TODO: Options parsing...
     e := core.NewStrEvent(string(buf[:reqLen]))
     log.Info("Received " + e.ToString())
-    p.outQ<-e
+    p.OutQ<-e
     log.Info("Appended " + e.ToString())
 
 

@@ -87,6 +87,12 @@ func main() {
             return cli.NewExitError(err.Error(), -2)
         }
 
+        Q_LEN, ok := CFG["main"].(core.Config)["channel_size"].(uint64)
+        if !ok {
+            log.Warn("No buffer length (channel_size) set in main section. Assuming 1")
+            Q_LEN = 1
+        }
+
         // Load registry
         reg := core.GetRegistryInstance()
 
@@ -103,7 +109,7 @@ func main() {
         var chans []chan core.Event
 
         // Create the first Q (ouput)
-        tmpch := make(chan core.Event)
+        tmpch := make(chan core.Event, Q_LEN)
         chans = append(chans, tmpch)
 
         // Append in module
@@ -117,7 +123,7 @@ func main() {
         for index, cfg := range proc {
             // Create a new one for every output
 
-            chans = append(chans, make(chan core.Event))
+            chans = append(chans, make(chan core.Event, Q_LEN))
 
             log.Info("Loading processor module ", index)
             tmp, err = instanceFromConfig(
@@ -150,20 +156,12 @@ func main() {
             go mod.Run()
         }
 
+        // Now loop forever
         for {
-            // for _, ch := range chans {
-            //     <-ch
-            // }
             time.Sleep(time.Duration(100)*time.Millisecond)
             log.Warn("All Channels Empty")
         }
 
-
-
-        // e := core.NewDataEvent()
-        // log.Info(len(reg))
-        // log.Info(e.ToString())
-        // reg["TCPInput"](ch1, ch2, in)
         return nil
     }
 

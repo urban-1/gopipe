@@ -11,27 +11,24 @@ func init() {
 }
 
 type NullOutput struct {
-    config core.Config
-    inQ chan core.Event
-    outQ chan core.Event
-    mustStop bool
+    core.ComponentBase
 }
 
 func NewNullOutput(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
     log.Info("Creating NullOutput")
-    return &NullOutput{cfg, inQ, outQ, false}
+    return &NullOutput{*core.NewComponentBase(inQ, outQ, cfg)}
 }
 
 func (p *NullOutput) Stop() {
-    p.mustStop = true
+    p.MustStop = true
 }
 
 func (p *NullOutput) Run() {
-    p.mustStop = false
+    p.MustStop = false
     log.Debug("NullOutput Starting ... ")
-    for !p.mustStop {
+    for !p.MustStop {
         log.Debug("NullOutput Reading")
-        <-p.inQ
+        <-p.InQ
     }
     log.Debug("NullOutput Stopping")
 }
