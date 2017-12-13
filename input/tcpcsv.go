@@ -11,7 +11,7 @@ func init() {
 }
 
 type TCPCSVInput struct {
-    TCPInput
+    TCPJSONInput
 }
 
 func NewTCPCSVInput(inQ chan Event, outQ chan Event, cfg Config) Component {
@@ -29,7 +29,7 @@ func NewTCPCSVInput(inQ chan Event, outQ chan Event, cfg Config) Component {
     }
 
     return &TCPCSVInput{
-            TCPInput{
+            TCPJSONInput{
                 *NewComponentBase(inQ, outQ, cfg),
                 &CSVLineCodec{
                     headers,

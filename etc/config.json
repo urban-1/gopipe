@@ -14,7 +14,8 @@
     },
     "proc": [
         {
-            "module": "LogProc"
+            "module": "LogProc",
+            "level": "debug"
         }
     ],
     "out": {
