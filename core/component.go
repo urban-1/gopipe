@@ -3,7 +3,7 @@ package core
 import (
     "fmt"
     "time"
-    // log "github.com/sirupsen/logrus"
+    log "github.com/sirupsen/logrus"
 )
 
 // == Aliases the name to work for casting too?!?! Dont know dont ask
@@ -87,4 +87,23 @@ func (p *ComponentBase) Stop() {
 
 func  (p *ComponentBase) StatsAddMesg() {
     p.Stats.AddMessage()
+}
+
+func  (p *ComponentBase) PrintStats(name string, every uint64) {
+    if p.Stats.MsgCount % every != 0 {
+        return
+    }
+
+    inQLen := -1
+    if p.InQ != nil {
+        inQLen = len(p.InQ)
+    }
+
+    outQLen := -1
+    if p.OutQ != nil {
+        outQLen = len(p.OutQ)
+    }
+
+    log.Info(name, "> iq=", inQLen, ", oq=", outQLen, ", ", p.Stats.DebugStr())
+
 }

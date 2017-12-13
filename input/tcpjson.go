@@ -109,9 +109,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
         // Stats
         p.StatsAddMesg()
 
-        if p.Stats.MsgCount % 10000 == 0 {
-            log.Info("TCP STATS: ", p.Stats.DebugStr())
-        }
+        p.PrintStats("TCP", 100000)
 
     }
 }
