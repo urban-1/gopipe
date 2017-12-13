@@ -1,11 +1,13 @@
 package input
 
 import (
-    "net"
     "os"
+    "io"
+    "net"
     "bufio"
     "strconv"
     "gopipe/core"
+    "encoding/json"
     log "github.com/sirupsen/logrus"
 )
 
@@ -53,6 +55,7 @@ func (p *TCPInput) Run() {
             log.Error("Error accepting: ", err.Error())
             os.Exit(1)
         }
+        log.Info("Accepted " + conn.RemoteAddr().String())
         // Handle connections in a new goroutine.
         go p.handleRequest(conn)
     }
@@ -62,28 +65,46 @@ func (p *TCPInput) Run() {
 func (p *TCPInput) handleRequest(conn net.Conn) {
     // Make a buffer to hold incoming data.
     reader := bufio.NewReader(conn)
-    lineData, isPrefix, err := reader.ReadLine()
-	if err == io.EOF {
-		log.Println("server disconnected: " + conn.RemoteAddr().String())
-		break
-	}
+    var tmpdata []byte
 
-    buf := make([]byte, 1024)
-    // Read the incoming connection into the buffer.
-    reqLen, err := conn.Read(buf)
-    if err != nil {
-        log.Println("Error reading:", err.Error())
+    for {
+        linedata, is_prefix, err := reader.ReadLine()
+    	if err == io.EOF {
+    		log.Println("Client disconnected: " + conn.RemoteAddr().String())
+    		break
+    	}
+
+        if is_prefix {
+            tmpdata = append(tmpdata, linedata...)
+
+            // Max line protection...
+            if len(tmpdata) > 65000 {
+                log.Warn("Connection flood detected. Closing connection: " + conn.RemoteAddr().String())
+				conn.Close()
+				break
+            }
+            continue
+        }
+
+        tmpdata = append(tmpdata, linedata...)
+        p.handleData(tmpdata, conn.RemoteAddr().String())
+        tmpdata = []byte{}
+
+    }
+}
+
+/**
+ * Decode the received line data - assume it is JSON!
+ */
+func (p *TCPInput) handleData(data []byte, client string) {
+    var json_data map[string]interface{}
+    if err := json.Unmarshal(data, &json_data); err != nil {
+        log.Error("Failed to decode data from " + client)
+        log.Error("   data: " + string(data))
     }
 
-    // TODO: Options parsing...
-    e := core.NewStrEvent(string(buf[:reqLen]))
-    log.Info("Received " + e.ToString())
+    e := core.NewDataEvent(json_data)
+    log.Debug("Received from:" + client)
     p.OutQ<-e
-    log.Info("Appended " + e.ToString())
 
-
-    // Send a response back to person contacting us.
-    //conn.Write([]byte("Message received."))
-    // Close the connection when you're done with it.
-    conn.Close()
 }

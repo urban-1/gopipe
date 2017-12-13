@@ -12,11 +12,25 @@ func init() {
 
 type LogProc struct {
     core.ComponentBase
+    logFunc func(args ...interface{})
 }
 
 func NewLogProc(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
     log.Info("Creating LogProc")
-    return &LogProc{*core.NewComponentBase(inQ, outQ, cfg)}
+
+    // Set this modules log level
+    logFunc := log.Debug
+    if level, ok := cfg["level"].(string); ok {
+        switch level {
+        case "debug":
+            logFunc = log.Debug
+        case "info":
+            logFunc = log.Info
+        case "warn":
+            logFunc = log.Warn
+        }
+    }
+    return &LogProc{*core.NewComponentBase(inQ, outQ, cfg), logFunc}
 }
 
 func (p *LogProc) Stop() {
@@ -29,7 +43,7 @@ func (p *LogProc) Run() {
     for !p.MustStop {
         log.Debug("LogProc Reading")
         e := <- p.InQ
-        log.Info("Log Proc " + e.ToString())
+        p.logFunc("LogProc: " + e.ToString())
 
         if p.OutQ != nil {
             log.Debug("LogProc Pushing")

@@ -158,8 +158,8 @@ func main() {
 
         // Now loop forever
         for {
-            time.Sleep(time.Duration(100)*time.Millisecond)
-            log.Warn("All Channels Empty")
+            time.Sleep(time.Duration(1000)*time.Millisecond)
+            // log.Warn("All Channels Empty")
         }
 
         return nil
