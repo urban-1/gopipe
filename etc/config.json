@@ -5,10 +5,12 @@
         "channel_size": 50000
     },
     "in": {
-        "module": "TCPInput",
+        "module": "TCPCSVInput",
         "threads": 2,
         "listen": "0.0.0.0",
-        "port": 9092
+        "port": 9092,
+        "headers": ["hello", "test", "src"],
+        "separator": ","
     },
     "proc": [
         {

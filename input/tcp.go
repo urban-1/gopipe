@@ -6,33 +6,36 @@ import (
     "net"
     "bufio"
     "strconv"
-    "gopipe/core"
-    "encoding/json"
     log "github.com/sirupsen/logrus"
+
+    . "gopipe/core"
 )
 
 func init() {
     log.Info("Registering TCPInput")
-    core.GetRegistryInstance()["TCPInput"] = NewTCPInput
+    GetRegistryInstance()["TCPInput"] = NewTCPInput
 }
 
+/**
+ * The base structure for common TCP Ops
+ */
 type TCPInput struct {
-    core.ComponentBase
+    ComponentBase
+    // Keep a referece to the struct responsible for decoding...
+    Decoder LineCodec
     host string
     port uint32
 }
 
-func NewTCPInput(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
+func NewTCPInput(inQ chan Event, outQ chan Event, cfg Config) Component {
     log.Info("Creating TCPInput")
-    m := TCPInput{*core.NewComponentBase(inQ, outQ, cfg),
+    m := TCPInput{*NewComponentBase(inQ, outQ, cfg),
+        &JSONLineCodec{},
         cfg["listen"].(string), uint32(cfg["port"].(float64))}
 
     return &m
 }
 
-func (p *TCPInput) Stop() {
-    p.MustStop = true
-}
 
 func (p *TCPInput) Run() {
     pstr := strconv.FormatInt(int64(p.port), 10)
@@ -70,7 +73,7 @@ func (p *TCPInput) handleRequest(conn net.Conn) {
     for {
         linedata, is_prefix, err := reader.ReadLine()
     	if err == io.EOF {
-    		log.Println("Client disconnected: " + conn.RemoteAddr().String())
+    		log.Info("Client disconnected: " + conn.RemoteAddr().String())
     		break
     	}
 
@@ -87,24 +90,21 @@ func (p *TCPInput) handleRequest(conn net.Conn) {
         }
 
         tmpdata = append(tmpdata, linedata...)
-        p.handleData(tmpdata, conn.RemoteAddr().String())
+
+        // This should call the correct .formatData() depending on the value of p
+        json_data, err := p.Decoder.FromBytes(tmpdata)
+        if err != nil {
+            log.Error("Failed to decode data from " + conn.RemoteAddr().String())
+            log.Error("   data: " + string(tmpdata))
+            log.Error(err.Error())
+            tmpdata = []byte{}
+            continue
+        }
+
+        e := NewDataEvent(json_data)
+        p.OutQ<-e
+
         tmpdata = []byte{}
 
     }
-}
-
-/**
- * Decode the received line data - assume it is JSON!
- */
-func (p *TCPInput) handleData(data []byte, client string) {
-    var json_data map[string]interface{}
-    if err := json.Unmarshal(data, &json_data); err != nil {
-        log.Error("Failed to decode data from " + client)
-        log.Error("   data: " + string(data))
-    }
-
-    e := core.NewDataEvent(json_data)
-    log.Debug("Received from:" + client)
-    p.OutQ<-e
-
 }
