@@ -28,11 +28,16 @@ func NewTCPCSVInput(inQ chan Event, outQ chan Event, cfg Config) Component {
         sep = tmp[0]
     }
 
+    convert := true
+    if tmp, ok := cfg["convert"].(bool); ok {
+        convert = tmp
+    }
+
     // Defaults...
     m := TCPCSVInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
 
     // Change to CSV
-    m.Decoder = &CSVLineCodec{headers, sep}
+    m.Decoder = &CSVLineCodec{headers, sep, convert}
 
     return &m
 }
