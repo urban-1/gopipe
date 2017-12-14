@@ -20,11 +20,9 @@
         }
     ],
     "out": {
-        "module": "FileCSVOutput",
-        "rotate_seconds": 2,
+        "module": "FileJSONOutput",
+        "rotate_seconds": 60,
         "folder": "/tmp",
-        "file_name_format": "gopipe-20060102-150405.csv",
-        "headers": ["hello", "test", "src"],
-        "separator": ","
+        "file_name_format": "gopipe-20060102-150405.json"
     }
 }
