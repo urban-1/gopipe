@@ -87,11 +87,17 @@ func main() {
             return cli.NewExitError(err.Error(), -2)
         }
 
-        Q_LEN, ok := CFG["main"].(core.Config)["channel_size"].(uint64)
+
+        tmp_q_len, ok := CFG["main"].(core.Config)["channel_size"].(float64)
         if !ok {
             log.Warn("No buffer length (channel_size) set in main section. Assuming 1")
-            Q_LEN = 1
+            tmp_q_len = 1
+        } else {
+            log.Info("Using buffer length: ", tmp_q_len)
         }
+
+        Q_LEN := int(tmp_q_len)
+
 
         // Load registry
         reg := core.GetRegistryInstance()
