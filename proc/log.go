@@ -49,6 +49,11 @@ func (p *LogProc) Run() {
             log.Debug("LogProc Pushing")
             p.OutQ<-e
         }
+
+        // Stats
+        p.StatsAddMesg()
+        p.PrintStats("Log", 50000)
+
     }
 
     log.Info("LogProc Stopping!?")

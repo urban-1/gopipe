@@ -20,18 +20,19 @@ func init() {
  * The base structure for common TCP Ops
  */
 type TCPJSONInput struct {
-    ComponentBase
+    *ComponentBase
     // Keep a referece to the struct responsible for decoding...
     Decoder LineCodec
     host string
     port uint32
+    Sock net.Listener
 }
 
 func NewTCPJSONInput(inQ chan Event, outQ chan Event, cfg Config) Component {
     log.Info("Creating TCPJSONInput")
-    m := TCPJSONInput{*NewComponentBase(inQ, outQ, cfg),
+    m := TCPJSONInput{NewComponentBase(inQ, outQ, cfg),
         &JSONLineCodec{},
-        cfg["listen"].(string), uint32(cfg["port"].(float64))}
+        cfg["listen"].(string), uint32(cfg["port"].(float64)), nil}
 
     return &m
 }
@@ -47,8 +48,10 @@ func (p *TCPJSONInput) Run() {
         os.Exit(1)
     }
 
+    p.Sock = l
+
     // Close the listener when the application closes.
-    defer l.Close()
+    defer p.Sock.Close()
 
     log.Info("Listening on " + p.host+":"+pstr)
     for !p.MustStop {
@@ -70,8 +73,9 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
     reader := bufio.NewReader(conn)
     var tmpdata []byte
 
-    for {
+    for !p.MustStop {
         linedata, is_prefix, err := reader.ReadLine()
+
     	if err == io.EOF {
     		log.Info("Client disconnected: " + conn.RemoteAddr().String())
     		break
@@ -108,8 +112,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
 
         // Stats
         p.StatsAddMesg()
-
-        p.PrintStats("TCP", 100000)
+        p.PrintStats("TCP", 50000)
 
     }
 }

@@ -11,7 +11,7 @@ func init() {
 }
 
 type TCPCSVInput struct {
-    TCPJSONInput
+    *TCPJSONInput
 }
 
 func NewTCPCSVInput(inQ chan Event, outQ chan Event, cfg Config) Component {
@@ -28,11 +28,11 @@ func NewTCPCSVInput(inQ chan Event, outQ chan Event, cfg Config) Component {
         sep = tmp[0]
     }
 
-    return &TCPCSVInput{
-            TCPJSONInput{
-                *NewComponentBase(inQ, outQ, cfg),
-                &CSVLineCodec{
-                    headers,
-                    sep},
-                cfg["listen"].(string), uint32(cfg["port"].(float64))}}
+    // Defaults...
+    m := TCPCSVInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+
+    // Change to CSV
+    m.Decoder = &CSVLineCodec{headers, sep}
+
+    return &m
 }

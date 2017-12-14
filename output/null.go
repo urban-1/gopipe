@@ -29,6 +29,10 @@ func (p *NullOutput) Run() {
     for !p.MustStop {
         log.Debug("NullOutput Reading")
         <-p.InQ
+
+        // Stats
+        p.StatsAddMesg()
+        p.PrintStats("Null", 50000)
     }
     log.Debug("NullOutput Stopping")
 }
