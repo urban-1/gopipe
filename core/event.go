@@ -1,6 +1,7 @@
 package core
 
 import (
+    "time"
     "encoding/json"
     log "github.com/sirupsen/logrus"
 )
@@ -14,6 +15,7 @@ const (
 
 type Event struct {
     mode int
+    Timestamp time.Time
     Data map[string]interface{}
 }
 
@@ -23,7 +25,7 @@ func NewEvent(data map[string]interface{}) *Event {
     // m.Mode = TYPE_STR
     // m.Message = ""
     // return m
-    return &Event{EVENT_DATA, data}
+    return &Event{EVENT_DATA, time.Now(), data}
 }
 
 func (e *Event) ToString() string {
