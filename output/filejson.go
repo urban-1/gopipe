@@ -45,10 +45,6 @@ func NewFileJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component 
         &JSONLineCodec{}}
 }
 
-func (p *FileJSONOutput) Stop() {
-    p.MustStop = true
-}
-
 /**
  * Check and rotate the output file if needed
  *
@@ -101,7 +97,7 @@ func (p *FileJSONOutput) Run() {
         if err != nil {
             log.Error("Failed to encode data: ", err.Error())
         }
-        data = append(data, byte('\n'))
+
         _, err = p.Fd.Write(data)
 
         if err != nil {
@@ -110,7 +106,7 @@ func (p *FileJSONOutput) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("JSONFile", 50000)
+        p.PrintStats("File", 50000)
     }
     log.Debug("FileJSONOutput Stopping")
 }

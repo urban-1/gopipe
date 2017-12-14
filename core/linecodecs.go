@@ -1,7 +1,9 @@
 package core
 
 import (
+    "fmt"
     "bytes"
+    "bufio"
     "errors"
     "strconv"
     "encoding/json"
@@ -27,11 +29,17 @@ func (*JSONLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
     return json_data, nil
 }
 
+/**
+ * Return the content in Bytes. NOTE: this includes a \n at the end! (to match
+ * the behaviour of csv.Writer...)
+ */
 func (*JSONLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
     b, err := json.Marshal(data)
     if err != nil {
         return nil, err
     }
+
+    b = append(b, byte('\n'))
     return b, nil
 }
 
@@ -82,11 +90,22 @@ func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 
     }
 
+
     return json_data, nil
 }
 
-func (*CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
-    return nil, errors.New("Not implemented")
+func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
+    var b bytes.Buffer
+    writer := csv.NewWriter(bufio.NewWriter(&b))
+
+    var record []string
+    for _, h := range c.Headers {
+        record = append(record, fmt.Sprintf("%v", data[h]))
+    }
+    writer.Write(record)
+    writer.Flush()
+    return b.Bytes(), nil
+
 }
 
 
