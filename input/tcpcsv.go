@@ -14,7 +14,7 @@ type TCPCSVInput struct {
     *TCPJSONInput
 }
 
-func NewTCPCSVInput(inQ chan Event, outQ chan Event, cfg Config) Component {
+func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating TCPCSVInput")
 
     headers := []string{}

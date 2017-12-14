@@ -11,7 +11,7 @@
         "port": 9092,
         "headers": ["hello", "test", "src"],
         "separator": ",",
-        "convert": true
+        "convert": false
     },
     "proc": [
         {
@@ -20,9 +20,10 @@
         }
     ],
     "out": {
-        "module": "NullOutput",
-        "rotate_seconds": 60,
-        "file_name_format": "gopipe-%Y%M%d-%H%m%s.csv",
+        "module": "FileJSONOutput",
+        "rotate_seconds": 2,
+        "folder": "/tmp",
+        "file_name_format": "gopipe-20060102-150405.json",
         "separator": ","
     }
 }

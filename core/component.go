@@ -69,14 +69,14 @@ func (c *ComponentStats) Reset () {
  * ComponentBase has all core functions that EVERY component must have
  */
 type ComponentBase struct {
-    InQ chan Event
-    OutQ chan Event
+    InQ chan *Event
+    OutQ chan *Event
     Config Config
     MustStop bool
     Stats ComponentStats
 }
 
-func NewComponentBase(inQ chan Event, outQ chan Event, cfg Config) *ComponentBase {
+func NewComponentBase(inQ chan *Event, outQ chan *Event, cfg Config) *ComponentBase {
     return &ComponentBase{inQ, outQ, cfg, false, NewComponentStats()}
 }
 

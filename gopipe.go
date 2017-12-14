@@ -22,7 +22,7 @@ func init() {
 }
 
 
-func instanceFromConfig(cfg core.Config, ch1 chan core.Event, ch2 chan core.Event, reg core.Registry) (core.Component, error) {
+func instanceFromConfig(cfg core.Config, ch1 chan *core.Event, ch2 chan *core.Event, reg core.Registry) (core.Component, error) {
 
     module_name, ok := cfg["module"].(string)
     if !ok {
@@ -112,10 +112,10 @@ func main() {
         // Store our modules
         var mods []core.Component
         // Store all channels
-        var chans []chan core.Event
+        var chans []chan *core.Event
 
         // Create the first Q (ouput)
-        tmpch := make(chan core.Event, Q_LEN)
+        tmpch := make(chan *core.Event, Q_LEN)
         chans = append(chans, tmpch)
 
         // Append in module
@@ -129,7 +129,7 @@ func main() {
         for index, cfg := range proc {
             // Create a new one for every output
 
-            chans = append(chans, make(chan core.Event, Q_LEN))
+            chans = append(chans, make(chan *core.Event, Q_LEN))
 
             log.Info("Loading processor module ", index)
             tmp, err = instanceFromConfig(

@@ -14,7 +14,7 @@ type NullOutput struct {
     core.ComponentBase
 }
 
-func NewNullOutput(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
+func NewNullOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
     log.Info("Creating NullOutput")
     return &NullOutput{*core.NewComponentBase(inQ, outQ, cfg)}
 }

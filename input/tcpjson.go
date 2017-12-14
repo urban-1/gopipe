@@ -28,7 +28,7 @@ type TCPJSONInput struct {
     Sock net.Listener
 }
 
-func NewTCPJSONInput(inQ chan Event, outQ chan Event, cfg Config) Component {
+func NewTCPJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating TCPJSONInput")
     m := TCPJSONInput{NewComponentBase(inQ, outQ, cfg),
         &JSONLineCodec{},
@@ -105,7 +105,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
             continue
         }
 
-        e := NewDataEvent(json_data)
+        e := NewEvent(json_data)
         p.OutQ<-e
 
         tmpdata = []byte{}

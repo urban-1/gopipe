@@ -15,7 +15,7 @@ type LogProc struct {
     logFunc func(args ...interface{})
 }
 
-func NewLogProc(inQ chan core.Event, outQ chan core.Event, cfg core.Config) core.Component {
+func NewLogProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
     log.Info("Creating LogProc")
 
     // Set this modules log level
