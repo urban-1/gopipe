@@ -10,6 +10,9 @@ import (
 func init() {
     log.Info("Registering FileJSONOutput")
     GetRegistryInstance()["FileJSONOutput"] = NewFileJSONOutput
+
+    log.Info("Registering FileCSVOutput")
+    GetRegistryInstance()["FileCSVOutput"] = NewFileCSVOutput
 }
 
 type FileJSONOutput struct {
@@ -96,6 +99,7 @@ func (p *FileJSONOutput) Run() {
         data, err = p.Encoder.ToBytes(e.Data)
         if err != nil {
             log.Error("Failed to encode data: ", err.Error())
+            continue
         }
 
         _, err = p.Fd.Write(data)
@@ -109,4 +113,39 @@ func (p *FileJSONOutput) Run() {
         p.PrintStats("File", 50000)
     }
     log.Debug("FileJSONOutput Stopping")
+}
+
+
+/**
+ * File CSV implementation
+ */
+type FileCSVOutput struct {
+    *FileJSONOutput
+}
+
+func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+    log.Info("Creating FileCSVOutput")
+
+    headers := []string{}
+    if tmp, ok := cfg["headers"].(InterfaceArray); ok {
+        headers = tmp.ToStringArray()
+    }
+    log.Infof("  Headers %v", headers)
+
+    sep := ","[0]
+    if tmp, ok := cfg["separator"].(string); ok {
+        sep = tmp[0]
+    }
+
+    convert := true
+    if tmp, ok := cfg["convert"].(bool); ok {
+        convert = tmp
+    }
+
+    m := FileCSVOutput{NewFileJSONOutput(inQ, outQ, cfg).(*FileJSONOutput)}
+
+    // Change to CSV
+    m.Encoder = &CSVLineCodec{headers, sep, convert}
+
+    return &m
 }

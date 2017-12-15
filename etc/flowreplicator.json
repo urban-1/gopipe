@@ -1,0 +1,24 @@
+{
+    "main": {
+        "num_cpus": 2,
+        "log_level": 1,
+        "channel_size": 50000
+    },
+    "in": {
+        "module": "UDPRawInput",
+        "listen": "0.0.0.0",
+        "port": 9090
+    },
+    "proc": [
+        {
+            "module": "UDPRawOutput",
+            "target": "127.0.0.1",
+            "port": 9091
+        }
+    ],
+    "out": {
+        "module": "UDPRawOutput",
+        "target": "127.0.0.1",
+        "port": 9092
+    }
+}

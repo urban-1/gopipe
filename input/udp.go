@@ -85,7 +85,7 @@ func (p *UDPJSONInput) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("UDP", 50000)
+        p.PrintStats("UDP-IN", 50000)
 
 
     }

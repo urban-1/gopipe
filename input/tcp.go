@@ -121,7 +121,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("TCP", 50000)
+        p.PrintStats("TCP-IN", 50000)
 
     }
 }
