@@ -1,6 +1,8 @@
-hash: 1a4e1fa4dcfc1bcd92f6e50c116d2fa50afbdfae545ae15835cc084f2b44fac1
-updated: 2017-12-14T11:19:03.516934015Z
+hash: 7a87f5c7c684e547cdc2adfe1f0768250aa939b9b700636c3e39d0ce37721792
+updated: 2017-12-15T14:11:07.164008583Z
 imports:
+- name: github.com/asergeyev/nradix
+  version: 3872ab85bb568d5400c3f53ac4d903744b2c8ea9
 - name: github.com/sirupsen/logrus
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
 - name: github.com/urfave/cli
@@ -10,7 +12,7 @@ imports:
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: 1d2aa6dbdea45adaaebb9905d0666e4537563829
+  version: d5840adf789d732bc8b00f37b26ca956a7cc8e79
   subpackages:
   - unix
   - windows
