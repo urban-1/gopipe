@@ -137,8 +137,8 @@ func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating TCPCSVInput")
 
     headers := []string{}
-    if tmp, ok := cfg["headers"].(InterfaceArray); ok {
-        headers = tmp.ToStringArray()
+    if tmp, ok := cfg["headers"].([]interface{}); ok {
+        headers = InterfaceToStringArray(tmp)
     }
     log.Infof("  Headers %v", headers)
 

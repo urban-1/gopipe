@@ -152,7 +152,7 @@ func (c *StringLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
  * Helper to extract a []interface}{} to a []string
  */
 type InterfaceArray []interface{}
-func (a InterfaceArray) ToStringArray() []string{
+func InterfaceToStringArray(a []interface{}) []string{
     ret := []string{}
     for _, v := range a {
         ret = append(ret, v.(string))

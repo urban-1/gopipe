@@ -43,9 +43,13 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     }
 
     in_fields := []string{}
-    if tmp, ok := cfg["in_fields"].(InterfaceArray); ok {
-        in_fields = tmp.ToStringArray()
+    //log.Info(cfg["in_fields"].(InterfaceArray))
+
+    if tmp, ok := cfg["in_fields"].([]interface{}); ok {
+        in_fields = InterfaceToStringArray(tmp)
     }
+    log.Infof("  In Fields %v", in_fields)
+
 
     out_fields := []LPMOutField{}
     tmpof, ok := cfg["out_fields"].([]map[string]interface{})
@@ -78,7 +82,23 @@ func (p *LPMProc) Run() {
         e := <- p.InQ
 
         p.TreeLock.Lock()
-        // TODO: process
+
+        log.Info(p.InFields)
+        for _, ifield := range p.InFields {
+            log.Info("Checking ", ifield)
+            // Get the node
+            value, err := p.Tree.FindCIDR(e.Data[ifield].(string))
+            if err != nil {
+                log.Error("LPM error in find: ", err.Error())
+                continue
+            }
+            if value == nil {
+                log.Error("Could not find prefix for '", ifield, "' -> ", e.Data[ifield].(string))
+                continue
+            }
+
+            log.Info(value, err)
+        }
 
         // Now unlock and push
         p.TreeLock.Unlock()
@@ -107,7 +127,7 @@ func (p *LPMProc) loadTree() {
 
     p.Tree = nradix.NewTree(100)
 
-    log.Error("LPM: Reading file")
+    log.Warn("LPM: Reading file")
     reader := bufio.NewReader(f)
     json_data := map[string]interface{}{}
     count := 1
@@ -123,11 +143,6 @@ func (p *LPMProc) loadTree() {
 
         p.Tree.AddCIDRb(parts[0], json_data)
         count += 1
-        if (count % 100000) == 0 {
-            //log.Info(".")
-            log.Info(string(parts[0]), string(meta))
-        }
-
         line, _, err = reader.ReadLine()
     }
 
