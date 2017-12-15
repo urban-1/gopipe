@@ -14,6 +14,15 @@ import (
 func init() {
     log.Info("Registering TCPJSONInput")
     GetRegistryInstance()["TCPJSONInput"] = NewTCPJSONInput
+
+    log.Info("Registering TCPCSVInput")
+    GetRegistryInstance()["TCPCSVInput"] = NewTCPCSVInput
+
+    log.Info("Registering TCPStrInput")
+    GetRegistryInstance()["TCPStrInput"] = NewTCPStrInput
+
+    log.Info("Registering TCPRawInput")
+    GetRegistryInstance()["TCPRawInput"] = NewTCPRawInput
 }
 
 /**
@@ -115,4 +124,77 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
         p.PrintStats("TCP", 50000)
 
     }
+}
+
+/**
+ * TCP CSV implementation
+ */
+type TCPCSVInput struct {
+    *TCPJSONInput
+}
+
+func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+    log.Info("Creating TCPCSVInput")
+
+    headers := []string{}
+    if tmp, ok := cfg["headers"].(InterfaceArray); ok {
+        headers = tmp.ToStringArray()
+    }
+    log.Infof("  Headers %v", headers)
+
+    sep := ","[0]
+    if tmp, ok := cfg["separator"].(string); ok {
+        sep = tmp[0]
+    }
+
+    convert := true
+    if tmp, ok := cfg["convert"].(bool); ok {
+        convert = tmp
+    }
+
+    // Defaults...
+    m := TCPCSVInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+
+    // Change to CSV
+    m.Decoder = &CSVLineCodec{headers, sep, convert}
+
+    return &m
+}
+
+/**
+ * TCP Raw implementation
+ */
+type TCPRawInput struct {
+    *TCPJSONInput
+}
+
+func NewTCPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+    log.Info("Creating TCPRawInput")
+
+    // Defaults...
+    m := TCPRawInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+
+    // Change to CSV
+    m.Decoder = &RawLineCodec{}
+
+    return &m
+}
+
+/**
+ * TCP String implementation
+ */
+type TCPStrInput struct {
+    *TCPJSONInput
+}
+
+func NewTCPStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+    log.Info("Creating TCPStrInput")
+
+    // Defaults...
+    m := TCPStrInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+
+    // Change to CSV
+    m.Decoder = &StringLineCodec{}
+
+    return &m
 }
