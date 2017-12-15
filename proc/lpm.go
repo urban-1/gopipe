@@ -44,12 +44,9 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     }
 
     in_fields := []string{}
-    //log.Info(cfg["in_fields"].(InterfaceArray))
-
     if tmp, ok := cfg["in_fields"].([]interface{}); ok {
         in_fields = InterfaceToStringArray(tmp)
     }
-    log.Infof("  In Fields %v", in_fields)
 
 
     out_fields := []LPMOutField{}
@@ -60,7 +57,6 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
             out_fields,
             LPMOutField{v2["newkey"].(string),  v2["metakey"].(string)})
     }
-    log.Error(out_fields)
 
     return &LPMProc{NewComponentBase(inQ, outQ, cfg),
          nil, &sync.Mutex{}, fpath,

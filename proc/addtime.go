@@ -17,7 +17,7 @@ type AddTimeProc struct {
 
 func NewAddTimeProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating AddTimeProc")
-    field_name, ok := cfg["filepath"].(string)
+    field_name, ok := cfg["field_name"].(string)
     if !ok {
         field_name = "timestamp"
     }

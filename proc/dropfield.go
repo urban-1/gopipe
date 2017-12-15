@@ -1,0 +1,45 @@
+package proc
+
+import (
+    . "gopipe/core"
+    log "github.com/sirupsen/logrus"
+)
+
+func init() {
+    log.Info("Registering DropFieldProc")
+    GetRegistryInstance()["DropFieldProc"] = NewDropFieldProc
+}
+
+type DropFieldProc struct {
+    *ComponentBase
+    FieldName string
+}
+
+func NewDropFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+    log.Info("Creating DropFieldProc")
+    field_name, ok := cfg["field_name"].(string)
+    if !ok {
+        field_name = "timestamp"
+    }
+    return &DropFieldProc{NewComponentBase(inQ, outQ, cfg), field_name}
+}
+
+
+func (p *DropFieldProc) Run() {
+    log.Debug("DropFieldProc Starting ... ")
+    p.MustStop = false
+    for !p.MustStop {
+        log.Debug("DropFieldProc Reading")
+        e := <- p.InQ
+
+        delete(e.Data, p.FieldName)
+        p.OutQ<-e
+
+        // Stats
+        p.StatsAddMesg()
+        p.PrintStats("ADD-TS", 50000)
+
+    }
+
+    log.Info("DropFieldProc Stopping!?")
+}
