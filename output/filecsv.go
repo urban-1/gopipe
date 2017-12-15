@@ -18,8 +18,8 @@ func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating FileCSVOutput")
 
     headers := []string{}
-    if tmp, ok := cfg["headers"].([]interface{}); ok {
-        headers = Interface2StringArray(tmp)
+    if tmp, ok := cfg["headers"].(InterfaceArray); ok {
+        headers = tmp.ToStringArray()
     }
     log.Infof("  Headers %v", headers)
 

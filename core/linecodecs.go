@@ -110,9 +110,27 @@ func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 
 
 /**
+ * Raw/bytes Live codec implementation
+ */
+type RawLineCodec struct {
+}
+
+func (c *RawLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
+    json_data := map[string]interface{}{}
+    json_data["bytes"] = data
+    return json_data, nil
+}
+
+func (c *RawLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
+    return data["bytes"].([]byte), nil
+}
+
+
+/**
  * Helper to extract a []interface}{} to a []string
  */
-func Interface2StringArray(a []interface{}, ) []string{
+type InterfaceArray []interface{}
+func (a InterfaceArray) ToStringArray() []string{
     ret := []string{}
     for _, v := range a {
         ret = append(ret, v.(string))
