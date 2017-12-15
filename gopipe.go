@@ -4,6 +4,8 @@ import (
     "os"
     "encoding/json"
     "io/ioutil"
+    "os/signal"
+    "syscall"
     "time"
 
     "github.com/urfave/cli"
@@ -162,11 +164,20 @@ func main() {
             go mod.Run()
         }
 
+
+
         // Now loop forever
         for {
             time.Sleep(time.Duration(1000)*time.Millisecond)
             // log.Warn("All Channels Empty")
         }
+
+        chExit := make(chan os.Signal, 1)
+    	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+    	select {
+    	case <-chExit:
+    		log.Println("gopipe EXIT...Bye.")
+    	}
 
         return nil
     }

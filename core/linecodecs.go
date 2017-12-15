@@ -8,7 +8,7 @@ import (
     "strconv"
     "encoding/json"
     "encoding/csv"
-    //log "github.com/sirupsen/logrus"
+    log "github.com/sirupsen/logrus"
 )
 
 type LineCodec interface {
@@ -110,7 +110,10 @@ func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 
 
 /**
- * Raw/bytes Live codec implementation
+ * Raw/bytes codec implementation
+ *
+ * Note that if bytes are given to the json pachage to Marshal, it will store the
+ * base64 of it...
  */
 type RawLineCodec struct {
 }
@@ -118,12 +121,31 @@ type RawLineCodec struct {
 func (c *RawLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
     json_data := map[string]interface{}{}
     json_data["bytes"] = data
+    log.Info(data)
     return json_data, nil
 }
 
 func (c *RawLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
     return data["bytes"].([]byte), nil
 }
+
+
+/**
+ * String codec implementation
+ */
+type StringLineCodec struct {
+}
+
+func (c *StringLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
+    json_data := map[string]interface{}{}
+    json_data["message"] = string(data)
+    return json_data, nil
+}
+
+func (c *StringLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
+    return data["message"].([]byte), nil
+}
+
 
 
 /**
