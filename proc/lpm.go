@@ -7,6 +7,7 @@ import (
     "time"
     "bufio"
     "bytes"
+    "strings"
     . "gopipe/core"
 
     "encoding/json"
@@ -20,8 +21,8 @@ func init() {
 }
 
 type LPMOutField struct {
-    Key string
-    Value string
+    NewKey string
+    MetaKey string
 }
 
 type LPMProc struct {
@@ -52,12 +53,14 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
 
     out_fields := []LPMOutField{}
-    tmpof, ok := cfg["out_fields"].([]map[string]interface{})
+    tmpof, ok := cfg["out_fields"].([]interface{})
     for _, v := range tmpof {
+        v2 := v.(map[string]interface{})
         out_fields = append(
             out_fields,
-            LPMOutField{v["key"].(string),  v["value"].(string)})
+            LPMOutField{v2["newkey"].(string),  v2["metakey"].(string)})
     }
+    log.Error(out_fields)
 
     return &LPMProc{NewComponentBase(inQ, outQ, cfg),
          nil, &sync.Mutex{}, fpath,
@@ -87,17 +90,23 @@ func (p *LPMProc) Run() {
         for _, ifield := range p.InFields {
             log.Info("Checking ", ifield)
             // Get the node
-            value, err := p.Tree.FindCIDR(e.Data[ifield].(string))
+            meta, err := p.Tree.FindCIDR(e.Data[ifield].(string))
             if err != nil {
                 log.Error("LPM error in find: ", err.Error())
                 continue
             }
-            if value == nil {
+            if meta == nil {
                 log.Error("Could not find prefix for '", ifield, "' -> ", e.Data[ifield].(string))
                 continue
             }
 
-            log.Info(value, err)
+
+            // Generate new fields
+            for _, ofield := range p.OutFields {
+                new_field := strings.Replace(ofield.NewKey, "{{in_field}}", ifield, 1)
+                e.Data[new_field] = meta.(map[string]interface{})[ofield.MetaKey]
+
+            }
         }
 
         // Now unlock and push
@@ -129,18 +138,19 @@ func (p *LPMProc) loadTree() {
 
     log.Warn("LPM: Reading file")
     reader := bufio.NewReader(f)
-    json_data := map[string]interface{}{}
+
     count := 1
 
     line, _, err := reader.ReadLine()
     for err != io.EOF {
-
+        json_data := map[string]interface{}{}
         parts := bytes.Split(line, []byte(" "))
         meta := bytes.Join(parts[1:], []byte(""))
         if json.Unmarshal(meta, &json_data) != nil {
             log.Error("LPM: Unable to parse prefix meta-data: ", string(meta))
         }
 
+        json_data["prefix"] = string(parts[0])
         p.Tree.AddCIDRb(parts[0], json_data)
         count += 1
         line, _, err = reader.ReadLine()

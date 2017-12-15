@@ -17,8 +17,8 @@
             "reload_minutes": 1440,
             "in_fields": ["src", "dst"],
             "out_fields": [
-                {"key_suffix": "sky_{{in_field}}_prefix", "value": "prefix"},
-                {"key_suffix": "sky_{{in_field}}_asn", "value": "asn"}
+                {"newkey": "sky_{{in_field}}_prefix", "metakey": "prefix"},
+                {"newkey": "sky_{{in_field}}_asn", "metakey": "asn"}
             ]
         }
     ],
