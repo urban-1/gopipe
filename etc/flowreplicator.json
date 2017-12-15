@@ -11,6 +11,10 @@
     },
     "proc": [
         {
+            "module": "SamplerProc",
+            "every": 2
+        },
+        {
             "module": "UDPRawOutput",
             "target": "127.0.0.1",
             "port": 9091
