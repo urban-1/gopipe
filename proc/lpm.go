@@ -105,7 +105,6 @@ func (p *LPMProc) Run() {
             for _, ofield := range p.OutFields {
                 new_field := strings.Replace(ofield.NewKey, "{{in_field}}", ifield, 1)
                 e.Data[new_field] = meta.(map[string]interface{})[ofield.MetaKey]
-
             }
         }
 

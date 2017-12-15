@@ -12,6 +12,10 @@
     },
     "proc": [
         {
+            "module": "AddTimeProc",
+            "field_name": "_timestamp"
+        },
+        {
             "module": "LPMProc",
             "filepath": "/tmp/prefix-asn.txt",
             "reload_minutes": 1440,
