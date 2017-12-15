@@ -6,6 +6,7 @@ A pipe-line in go
 
 - Learning Go
 - Network oriented
+- Allows the user to write more logic, still based on config
 
 ## Architecture
 
