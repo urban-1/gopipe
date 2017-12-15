@@ -1,4 +1,4 @@
-package input
+package proc
 
 import (
     "gopipe/core"
@@ -11,7 +11,7 @@ func init() {
 }
 
 type LogProc struct {
-    core.ComponentBase
+    *core.ComponentBase
     logFunc func(args ...interface{})
 }
 
@@ -30,12 +30,9 @@ func NewLogProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) co
             logFunc = log.Warn
         }
     }
-    return &LogProc{*core.NewComponentBase(inQ, outQ, cfg), logFunc}
+    return &LogProc{core.NewComponentBase(inQ, outQ, cfg), logFunc}
 }
 
-func (p *LogProc) Stop() {
-    p.MustStop = true
-}
 
 func (p *LogProc) Run() {
     log.Debug("LogProc Starting ... ")
