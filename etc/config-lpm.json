@@ -1,0 +1,26 @@
+{
+    "main": {
+        "num_cpus": 2,
+        "log_level": 1,
+        "channel_size": 50000
+    },
+    "in": {
+        "module": "TCPJSONInput",
+        "threads": 2,
+        "listen": "0.0.0.0",
+        "port": 9092
+    },
+    "proc": [
+        {
+            "module": "LPMProc",
+            "filepath": "~/tmp/prefix-asn.txt",
+            "in_fields": ["src", "dst"]
+        }
+    ],
+    "out": {
+        "module": "FileJSONOutput",
+        "rotate_seconds": 60,
+        "folder": "/tmp",
+        "file_name_format": "gopipe-20060102-150405.json"
+    }
+}
