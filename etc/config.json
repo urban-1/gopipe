@@ -2,10 +2,11 @@
     "main": {
         "num_cpus": 2,
         "log_level": 1,
-        "channel_size": 50000
+        "channel_size": 50000,
+        "stats_every": 100000
     },
     "in": {
-        "module": "UDPRawInput",
+        "module": "UDPStrInput",
         "threads": 2,
         "listen": "0.0.0.0",
         "port": 9092,
@@ -15,8 +16,18 @@
     },
     "proc": [
         {
+            "module": "RegexProc",
+            "regexes": [
+                "(?mi)(?P<host>[0-9a-z]+) (?P<port>[0-9]+): (?P<hostEvent>.*)"
+            ]
+        },
+        {
+            "module": "DropFieldProc",
+            "field_name": "message"
+        },
+        {
             "module": "LogProc",
-            "level": "debug"
+            "level": "info"
         }
     ],
     "out": {
