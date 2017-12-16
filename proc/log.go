@@ -1,21 +1,21 @@
 package proc
 
 import (
-    "gopipe/core"
+    . "gopipe/core"
     log "github.com/sirupsen/logrus"
 )
 
 func init() {
     log.Info("Registering LogProc")
-    core.GetRegistryInstance()["LogProc"] = NewLogProc
+    GetRegistryInstance()["LogProc"] = NewLogProc
 }
 
 type LogProc struct {
-    *core.ComponentBase
+    *ComponentBase
     logFunc func(args ...interface{})
 }
 
-func NewLogProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
+func NewLogProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating LogProc")
 
     // Set this modules log level
@@ -30,7 +30,7 @@ func NewLogProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) co
             logFunc = log.Warn
         }
     }
-    m := &LogProc{core.NewComponentBase(inQ, outQ, cfg), logFunc}
+    m := &LogProc{NewComponentBase(inQ, outQ, cfg), logFunc}
     m.Tag = "PROC-LOG"
     return m
 }

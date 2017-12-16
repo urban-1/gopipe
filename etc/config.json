@@ -30,6 +30,11 @@
             "types": ["int"]
         },
         {
+            "module": "Md5Proc",
+            "in_fields": ["host"],
+            "out_fields": ["host_hash"]
+        },
+        {
             "module": "LogProc",
             "level": "info"
         }
