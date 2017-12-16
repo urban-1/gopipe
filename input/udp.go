@@ -41,6 +41,8 @@ func NewUDPJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
         &JSONLineCodec{},
         cfg["listen"].(string), uint32(cfg["port"].(float64)), nil}
 
+    m.Tag = "IN-UDP-JSON"
+
     return &m
 }
 
@@ -85,7 +87,7 @@ func (p *UDPJSONInput) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("UDP-IN", 50000)
+        p.PrintStats()
 
 
     }
@@ -126,6 +128,8 @@ func NewUDPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     // Defaults...
     m := UDPCSVInput{NewUDPJSONInput(inQ, outQ, cfg).(*UDPJSONInput)}
 
+    m.Tag = "IN-UDP-CSV"
+
     // Change to CSV
     m.Decoder = &CSVLineCodec{headers, sep, convert}
 
@@ -146,6 +150,8 @@ func NewUDPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     // Defaults...
     m := UDPRawInput{NewUDPJSONInput(inQ, outQ, cfg).(*UDPJSONInput)}
 
+    m.Tag = "IN-UDP-RAW"
+
     // Change to CSV
     m.Decoder = &RawLineCodec{}
 
@@ -164,6 +170,8 @@ func NewUDPStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
     // Defaults...
     m := UDPStrInput{NewUDPJSONInput(inQ, outQ, cfg).(*UDPJSONInput)}
+
+    m.Tag = "IN-UDP-STR"
 
     // Change to CSV
     m.Decoder = &StringLineCodec{}

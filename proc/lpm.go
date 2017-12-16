@@ -58,10 +58,13 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
             LPMOutField{v2["newkey"].(string),  v2["metakey"].(string)})
     }
 
-    return &LPMProc{NewComponentBase(inQ, outQ, cfg),
-         nil, &sync.Mutex{}, fpath,
+    m := &LPMProc{NewComponentBase(inQ, outQ, cfg),
+         nradix.NewTree(100), &sync.Mutex{}, fpath,
          int(cfg["reload_minutes"].(float64)),
          in_fields, out_fields}
+
+     m.Tag = "PROC-LPM"
+     return m
 }
 
 
@@ -75,24 +78,34 @@ func (p *LPMProc) Run() {
     }(p)
 
     p.MustStop = false
+    cfg_error := false
+
     for !p.MustStop {
         // Do not read until we lock the tree!
-        log.Debug("LPMProc Reading")
+        log.Debug("LPMProc Reading ", p.MustStop)
         e := <- p.InQ
 
         p.TreeLock.Lock()
 
-        log.Info(p.InFields)
         for _, ifield := range p.InFields {
-            log.Info("Checking ", ifield)
+
+            what, ok := e.Data[ifield].(string)
+            if !ok {
+                // This is a user error, maybe error once?
+                if !cfg_error {
+                    log.Error("Cannot find field ", ifield)
+                    cfg_error = true
+                }
+                continue
+            }
             // Get the node
-            meta, err := p.Tree.FindCIDR(e.Data[ifield].(string))
+            meta, err := p.Tree.FindCIDR(what)
             if err != nil {
                 log.Error("LPM error in find: ", err.Error())
                 continue
             }
             if meta == nil {
-                log.Error("Could not find prefix for '", ifield, "' -> ", e.Data[ifield].(string))
+                log.Debug("Could not find prefix for '", ifield, "' -> ", e.Data[ifield].(string))
                 continue
             }
 
@@ -109,10 +122,9 @@ func (p *LPMProc) Run() {
 
         p.OutQ<-e
 
-
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("LPM", 50000)
+        p.PrintStats()
 
     }
 

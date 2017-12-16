@@ -43,9 +43,13 @@ func NewFileJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component 
         rotate_seconds = int(tmp)
     }
 
-    return &FileJSONOutput{NewComponentBase(inQ, outQ, cfg),
+    m := &FileJSONOutput{NewComponentBase(inQ, outQ, cfg),
         0, folder, pattern, rotate_seconds, nil,
         &JSONLineCodec{}}
+
+    m.Tag = "OUT-FILE-JSON"
+
+    return m
 }
 
 /**
@@ -110,7 +114,7 @@ func (p *FileJSONOutput) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("File", 50000)
+        p.PrintStats()
     }
     log.Debug("FileJSONOutput Stopping")
 }
@@ -143,6 +147,8 @@ func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     }
 
     m := FileCSVOutput{NewFileJSONOutput(inQ, outQ, cfg).(*FileJSONOutput)}
+
+    m.Tag = "OUT-FILE-CSV"
 
     // Change to CSV
     m.Encoder = &CSVLineCodec{headers, sep, convert}

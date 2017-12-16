@@ -21,7 +21,9 @@ func NewDropFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     if !ok {
         field_name = "timestamp"
     }
-    return &DropFieldProc{NewComponentBase(inQ, outQ, cfg), field_name}
+    m := &DropFieldProc{NewComponentBase(inQ, outQ, cfg), field_name}
+    m.Tag = "PROC-DROPFIELD"
+    return m
 }
 
 
@@ -37,7 +39,7 @@ func (p *DropFieldProc) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("ADD-TS", 50000)
+        p.PrintStats()
 
     }
 

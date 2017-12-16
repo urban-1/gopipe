@@ -30,7 +30,9 @@ func NewLogProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) co
             logFunc = log.Warn
         }
     }
-    return &LogProc{core.NewComponentBase(inQ, outQ, cfg), logFunc}
+    m := &LogProc{core.NewComponentBase(inQ, outQ, cfg), logFunc}
+    m.Tag = "PROC-LOG"
+    return m
 }
 
 
@@ -49,7 +51,7 @@ func (p *LogProc) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("Log", 50000)
+        p.PrintStats()
 
     }
 

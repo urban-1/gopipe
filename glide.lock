@@ -1,5 +1,5 @@
 hash: 7a87f5c7c684e547cdc2adfe1f0768250aa939b9b700636c3e39d0ce37721792
-updated: 2017-12-15T16:53:10.701468213Z
+updated: 2017-12-16T09:53:00.373815505Z
 imports:
 - name: github.com/asergeyev/nradix
   version: 3872ab85bb568d5400c3f53ac4d903744b2c8ea9
@@ -8,11 +8,11 @@ imports:
 - name: github.com/urfave/cli
   version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
 - name: golang.org/x/crypto
-  version: 94eea52f7b742c7cbe0b03b22f0c4c8631ece122
+  version: 9f005a07e0d31d45e6656d241bb5c0f2efd4bc94
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: d5840adf789d732bc8b00f37b26ca956a7cc8e79
+  version: 0ac51a24ef1c37380f98ba8b98f56e3bffd59850
   subpackages:
   - unix
   - windows

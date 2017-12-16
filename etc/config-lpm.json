@@ -2,7 +2,8 @@
     "main": {
         "num_cpus": 2,
         "log_level": 1,
-        "channel_size": 50000
+        "channel_size": 50000,
+        "stats_every": 10000000
     },
     "in": {
         "module": "TCPJSONInput",

@@ -18,7 +18,9 @@ type SamplerProc struct {
 
 func NewSamplerProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
     log.Info("Creating SamplerProc")
-    return &SamplerProc{core.NewComponentBase(inQ, outQ, cfg), uint64(cfg["every"].(float64))}
+    m := &SamplerProc{core.NewComponentBase(inQ, outQ, cfg), uint64(cfg["every"].(float64))}
+    m.Tag = "PROC-SAMPLER"
+    return m
 }
 
 
@@ -40,7 +42,7 @@ func (p *SamplerProc) Run() {
         p.OutQ<-e
 
         // Stats
-        p.PrintStats("Log", 50000)
+        p.PrintStats()
 
     }
 

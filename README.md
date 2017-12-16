@@ -41,5 +41,8 @@ Example script to load and format them:
 
     curl http://lg01.infra.ring.nlnog.net/table.txt | awk -F' ' '{print $1,"{\"asn\": "$2"}"}' > ~/tmp/prefix-asn.txt
 
+# Limitations
+
+-   Only one input: This can be fixed but there is no need atm
 
 ## Developers

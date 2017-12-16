@@ -90,15 +90,24 @@ func main() {
         }
 
 
-        tmp_q_len, ok := CFG["main"].(core.Config)["channel_size"].(float64)
+        // Channel buffer size
+        tmp_f64, ok := CFG["main"].(core.Config)["channel_size"].(float64)
         if !ok {
             log.Warn("No buffer length (channel_size) set in main section. Assuming 1")
-            tmp_q_len = 1
+            tmp_f64 = 1
         } else {
-            log.Info("Using buffer length: ", tmp_q_len)
+            log.Info("Using buffer length: ", tmp_f64)
         }
 
-        Q_LEN := int(tmp_q_len)
+        Q_LEN := int(tmp_f64)
+
+        // Printing frequency
+        tmp_f64, ok = CFG["main"].(core.Config)["stats_every"].(float64)
+        if ok {
+            core.STATS_EVERY = uint64(tmp_f64)
+        }
+
+
 
 
         // Load registry
@@ -164,18 +173,52 @@ func main() {
             go mod.Run()
         }
 
+        chExit := make(chan os.Signal, 1)
+        chInst := make(chan os.Signal, 1)
+    	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+        signal.Notify(chInst, syscall.SIGUSR1, syscall.SIGUSR1)
+
         // Now loop forever
-        for {
-            time.Sleep(time.Duration(1000)*time.Millisecond)
-            // log.Warn("All Channels Empty")
+        run := true
+        for run {
+            select {
+            case <-chExit:
+                log.Info("gopipe stoping components...")
+
+                // Kill the input
+                mods[0].Stop()
+
+                log.Info("gopipe waiting for queues to empty...")
+                for i, c := range chans {
+                    for len(c) > 0 {
+                        log.Info("Waiting on channel", i, " len=", len(c))
+                        time.Sleep(time.Duration(1000)*time.Millisecond)
+                    }
+                }
+
+                for _, mod := range mods {
+                    mod.Stop()
+                }
+
+        		log.Info("gopipe exiting...")
+                run = false
+                break
+            case sig := <-chInst:
+                switch sig {
+                case syscall.SIGUSR1:
+                    for _, mod := range mods {
+                        mod.PrintStats()
+                    }
+                case syscall.SIGUSR2:
+                    //handle SIGTERM
+                }
+            default:
+                time.Sleep(time.Duration(1000)*time.Millisecond)
+                // log.Warn("All Channels Empty")
+        	}
+
         }
 
-        chExit := make(chan os.Signal, 1)
-    	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
-    	select {
-    	case <-chExit:
-    		log.Println("gopipe EXIT...Bye.")
-    	}
 
         return nil
     }

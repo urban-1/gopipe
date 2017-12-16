@@ -21,7 +21,9 @@ func NewAddTimeProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     if !ok {
         field_name = "timestamp"
     }
-    return &AddTimeProc{NewComponentBase(inQ, outQ, cfg), field_name}
+    m := &AddTimeProc{NewComponentBase(inQ, outQ, cfg), field_name}
+    m.Tag = "PROC-ADDTIME"
+    return m
 }
 
 
@@ -37,7 +39,7 @@ func (p *AddTimeProc) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("ADD-TS", 50000)
+        p.PrintStats()
 
     }
 

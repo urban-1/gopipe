@@ -16,7 +16,11 @@ type NullOutput struct {
 
 func NewNullOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
     log.Info("Creating NullOutput")
-    return &NullOutput{*core.NewComponentBase(inQ, outQ, cfg)}
+    m := &NullOutput{*core.NewComponentBase(inQ, outQ, cfg)}
+
+    m.Tag = "OUT-NULL"
+
+    return m
 }
 
 func (p *NullOutput) Stop() {
@@ -32,7 +36,7 @@ func (p *NullOutput) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("Null", 50000)
+        p.PrintStats()
     }
     log.Debug("NullOutput Stopping")
 }

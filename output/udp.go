@@ -40,6 +40,8 @@ func NewUDPJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
         &JSONLineCodec{},
         cfg["target"].(string), uint32(cfg["port"].(float64)), nil}
 
+    m.Tag = "OUT-UDP-JSON"
+
     return &m
 }
 
@@ -77,11 +79,33 @@ func (p *UDPJSONOutput) Run() {
 
         // Stats
         p.StatsAddMesg()
-        p.PrintStats("UDP-OUT", 50000)
+        p.PrintStats()
     }
 
 }
 
+
+/**
+ * UDP CSV Implementation
+ *
+ */
+type UDPCSVOutput struct {
+    *UDPJSONOutput
+}
+
+func NewUDPCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+    log.Info("Creating UDPCSVOutput")
+
+    // Defaults...
+    m := UDPCSVOutput{NewUDPJSONOutput(inQ, outQ, cfg).(*UDPJSONOutput)}
+
+    m.Tag = "OUT-UDP-CSV"
+
+    // Change to CSV
+    m.Encoder = &CSVLineCodec{}
+
+    return &m
+}
 
 
 /**
@@ -97,6 +121,8 @@ func NewUDPRawOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
     // Defaults...
     m := UDPRawOutput{NewUDPJSONOutput(inQ, outQ, cfg).(*UDPJSONOutput)}
+
+    m.Tag = "OUT-UDP-RAW"
 
     // Change to CSV
     m.Encoder = &RawLineCodec{}
@@ -116,6 +142,8 @@ func NewUDPStrOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
     // Defaults...
     m := UDPStrOutput{NewUDPJSONOutput(inQ, outQ, cfg).(*UDPJSONOutput)}
+
+    m.Tag = "OUT-UDP-STR"
 
     // Change to CSV
     m.Encoder = &StringLineCodec{}

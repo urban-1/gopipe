@@ -6,6 +6,9 @@ import (
     log "github.com/sirupsen/logrus"
 )
 
+/** GLOBAL COMPONENT CONFIG */
+var STATS_EVERY uint64 = 100000
+
 // == Aliases the name to work for casting too?!?! Dont know dont ask
 type Config = map[string]interface{}
 
@@ -15,6 +18,7 @@ type Config = map[string]interface{}
 type Component interface {
     Run()
 	Stop()
+    PrintStats()
 }
 
 /**
@@ -33,7 +37,7 @@ func NewComponentStats() ComponentStats {
 
 
 func (c *ComponentStats) DebugStr() string {
-    return fmt.Sprintf("count=%d, rate=%d", c.MsgCount, c.MsgRate)
+    return fmt.Sprintf("rate=%-7d count=%d", c.MsgRate, c.MsgCount)
 
 }
 
@@ -74,10 +78,12 @@ type ComponentBase struct {
     Config Config
     MustStop bool
     Stats ComponentStats
+    Tag string
 }
 
 func NewComponentBase(inQ chan *Event, outQ chan *Event, cfg Config) *ComponentBase {
-    return &ComponentBase{inQ, outQ, cfg, false, NewComponentStats()}
+    m := &ComponentBase{inQ, outQ, cfg, false, NewComponentStats(), "Base"}
+    return m
 }
 
 
@@ -89,8 +95,12 @@ func  (p *ComponentBase) StatsAddMesg() {
     p.Stats.AddMessage()
 }
 
-func  (p *ComponentBase) PrintStats(name string, every uint64) {
-    if p.Stats.MsgCount % every != 0 {
+func  (p *ComponentBase) PrintStats() {
+    if STATS_EVERY == 0 {
+        return
+    }
+
+    if p.Stats.MsgCount % STATS_EVERY != 0 {
         return
     }
 
@@ -104,6 +114,6 @@ func  (p *ComponentBase) PrintStats(name string, every uint64) {
         outQLen = len(p.OutQ)
     }
 
-    log.Info(name, "> iq=", inQLen, ", oq=", outQLen, ", ", p.Stats.DebugStr())
+    log.Infof("%15s> iq=%-5d oq=%-5d %s", p.Tag, inQLen, outQLen, p.Stats.DebugStr())
 
 }
