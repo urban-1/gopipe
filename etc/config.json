@@ -35,6 +35,10 @@
             "out_fields": ["host_hash"]
         },
         {
+            "module": "AddTimeProc",
+            "field_name": "_timestamp"
+        },
+        {
             "module": "LogProc",
             "level": "info"
         }
