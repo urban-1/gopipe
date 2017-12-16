@@ -7,7 +7,6 @@
     },
     "in": {
         "module": "UDPStrInput",
-        "threads": 2,
         "listen": "0.0.0.0",
         "port": 9092,
         "headers": ["hello", "test", "src"],
@@ -24,6 +23,11 @@
         {
             "module": "DropFieldProc",
             "field_name": "message"
+        },
+        {
+            "module": "CastProc",
+            "fields": ["port"],
+            "types": ["int"]
         },
         {
             "module": "LogProc",
