@@ -59,7 +59,6 @@ func (p *Md5Proc) Run() {
                 continue
             }
 
-
             md5tmp := md5.Sum([]byte(b+p.Salt))
             e.Data[p.OutFields[i]] = hex.EncodeToString(md5tmp[:])
         }

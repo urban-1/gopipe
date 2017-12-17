@@ -36,6 +36,13 @@
             "salt": "andPepper!"
         },
         {
+            "module": "InListProc",
+            "in_field": "port",
+            "out_field": "port_block",
+            "reload_minutes": 100000000,
+            "list": ["8080", "443", "10000", "8924"]
+        },
+        {
             "module": "AddTimeProc",
             "field_name": "_timestamp"
         },
