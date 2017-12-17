@@ -1,3 +1,7 @@
+//
+// - Events: The core data representation of this framework. These are passed
+// around between components using Go channels
+//
 package core
 
 import (
@@ -6,28 +10,19 @@ import (
     log "github.com/sirupsen/logrus"
 )
 
-const (
-    EVENT_STR = iota
-    EVENT_DATA = iota
-)
 
-
-
+// Basic event struct containing the Data and the received time
 type Event struct {
-    mode int
     Timestamp time.Time
     Data map[string]interface{}
 }
 
-
+// Create a new event with the given data
 func NewEvent(data map[string]interface{}) *Event {
-    // m := new(Event)
-    // m.Mode = TYPE_STR
-    // m.Message = ""
-    // return m
-    return &Event{EVENT_DATA, time.Now(), data}
+    return &Event{time.Now(), data}
 }
 
+// Get the string replresentation of this event
 func (e *Event) ToString() string {
     b, err := json.Marshal(e.Data)
     if err != nil {
@@ -38,10 +33,7 @@ func (e *Event) ToString() string {
     return string(b)
 }
 
-func (e *Event) Type() int {
-    return e.mode
-}
-
+// Get the []byte representation of this event
 func (e *Event) GetBytes() []byte{
     b, err := json.Marshal(e.Data)
     if err != nil {

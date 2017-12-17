@@ -1,3 +1,10 @@
+//
+// Core package contains all common structs and functions. These include
+//
+// - Config: An alias to `map[string]interface{}`
+//
+// - Component interface and component base struct
+//
 package core
 
 import (
@@ -6,24 +13,21 @@ import (
     log "github.com/sirupsen/logrus"
 )
 
-/** GLOBAL COMPONENT CONFIG */
+// Component Global Config: How often to print stats in the log. This can be
+// changes in configuration via `stats_every`
 var STATS_EVERY uint64 = 100000
 
-// == Aliases the name to work for casting too?!?! Dont know dont ask
+// Config alias
 type Config = map[string]interface{}
 
-/**
- * Component's interface to reference any type
- */
+// Component's interface for abstraction
 type Component interface {
     Run()
 	Stop()
     PrintStats()
 }
 
-/**
- * Parsing stats
- */
+// Each component's processing stats
 type ComponentStats struct {
     MsgCount uint64
     MsgCountOld uint64
@@ -35,12 +39,14 @@ func NewComponentStats() ComponentStats {
     return ComponentStats{0,0,0,0}
 }
 
-
+// Return a string with rate and count (for logging purposes)
 func (c *ComponentStats) DebugStr() string {
     return fmt.Sprintf("rate=%-7d count=%d", c.MsgRate, c.MsgCount)
 
 }
 
+// Increments the MsgCount and if required, calculates the MsgRate. the default
+// interval is 3 seconds TODO: Global config
 func (c *ComponentStats) AddMessage() {
 
     now := time.Now().Unix()
@@ -62,6 +68,7 @@ func (c *ComponentStats) AddMessage() {
     }
 }
 
+// Reset the stats back to 0
 func (c *ComponentStats) Reset () {
     c.LastUpdate = 0
     c.MsgCount = 0
@@ -69,9 +76,8 @@ func (c *ComponentStats) Reset () {
     c.MsgRate = 0
 }
 
-/**
- * ComponentBase has all core functions that EVERY component must have
- */
+// ComponentBase implements core methods that EVERY component must have (avoid
+// code duplication)
 type ComponentBase struct {
     InQ chan *Event
     OutQ chan *Event
@@ -81,20 +87,26 @@ type ComponentBase struct {
     Tag string
 }
 
+// Create a new component given an input channel, an output channel and the
+// component's config
 func NewComponentBase(inQ chan *Event, outQ chan *Event, cfg Config) *ComponentBase {
     m := &ComponentBase{inQ, outQ, cfg, false, NewComponentStats(), "Base"}
     return m
 }
 
-
+// By default, just set MustStop to false. Component implementations should be
+// taking this into consideration in their Run() methods
 func (p *ComponentBase) Stop() {
     p.MustStop = true
 }
 
+// Wrapper around p.Stats
 func  (p *ComponentBase) StatsAddMesg() {
     p.Stats.AddMessage()
 }
 
+// Logs the stats if needed. It will log every STATS_EVERY (default 50K messages)
+// and can be disabled with stats_every = 0
 func  (p *ComponentBase) PrintStats() {
     if STATS_EVERY == 0 {
         return

@@ -1,3 +1,9 @@
+
+//
+// - Line codecs: Implement the LineCodec interface and are used for converting
+// between input and output types. The interface allows different type of codecs
+// to be used in the same transport class (ex UDP)
+//
 package core
 
 import (
@@ -16,9 +22,8 @@ type LineCodec interface {
     ToBytes(data map[string]interface{}) ([]byte, error)
 }
 
-/**
- * JSON Live codec implementation
- */
+// JSON Line codec implementation. The input is a single line forming a JSON
+// object. Files containing such data are some times refered to as JSONL
 type JSONLineCodec struct {}
 
 func (*JSONLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
@@ -29,10 +34,8 @@ func (*JSONLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
     return json_data, nil
 }
 
-/**
- * Return the content in Bytes. NOTE: this includes a \n at the end! (to match
- * the behaviour of csv.Writer...)
- */
+// Return the content in Bytes. NOTE: this includes a \n at the end! (to match
+// the behaviour of csv.Writer...)
 func (*JSONLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
     b, err := json.Marshal(data)
     if err != nil {
@@ -43,9 +46,8 @@ func (*JSONLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
     return b, nil
 }
 
-/**
- * CSV Live codec implementation
- */
+// CSV implementation: If convert is set to true, the FromBytes will try to
+// convert values to int/float types using  strconv.ParseInt and strconv.ParseFloat
 type CSVLineCodec struct {
     Headers []string
     Separator byte
@@ -109,14 +111,12 @@ func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 }
 
 
-/**
- * Raw/bytes codec implementation
- *
- * Note that if bytes are given to the json pachage to Marshal, it will store the
- * base64 of it...
- */
-type RawLineCodec struct {
-}
+
+// Raw/bytes codec implementation
+//
+// Note that if []bytes are given to the json package to Marshal, it will store the
+// base64 of it...
+type RawLineCodec struct {}
 
 func (c *RawLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
     json_data := map[string]interface{}{}
@@ -130,9 +130,7 @@ func (c *RawLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 }
 
 
-/**
- * String codec implementation
- */
+// String codec implementation
 type StringLineCodec struct {
 }
 
@@ -148,9 +146,8 @@ func (c *StringLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 
 
 
-/**
- * Helper to extract a []interface}{} to a []string
- */
+// Helper to extract a []interface}{} to a []string
+// TODO: Consider using a higher level JSON lib
 type InterfaceArray []interface{}
 func InterfaceToStringArray(a []interface{}) []string{
     ret := []string{}
