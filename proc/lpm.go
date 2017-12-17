@@ -1,5 +1,5 @@
 /*
-    - LPM: Longest Prefix Map: Loads a list of prefixes (network addresses)
+    - LPM: Longest Prefix Match: Loads a list of prefixes (network addresses)
     periodically from a file and performs LPM for event data fields. The result
     can have meta-data which are then exported back to the event's data. For
     example the following will figure out the matched prefix and Autonomous
