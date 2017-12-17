@@ -1,3 +1,8 @@
+/*
+    - REGEX: Given a regex with names captures, convert each event from a text
+    one to a data one (using the "message" field, which is where Str codecs store
+    their output)
+ */
 package proc
 
 import (
@@ -26,7 +31,7 @@ func NewRegexProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
         regs = append(regs, regexp.MustCompile(v.(string)))
     }
     m := &RegexProc{NewComponentBase(inQ, outQ, cfg), regs}
-    m.Tag = "REGEX-LOG"
+    m.Tag = "REGEX-PROC"
     return m
 }
 

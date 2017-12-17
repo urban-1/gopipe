@@ -1,3 +1,12 @@
+/*
+    The main `gopipe` binary.
+
+    Reads config, creates modules and channels and starts the whole pipeline...
+
+    Given thet all modules are reusable, one can use the rest of the packages as
+    library of components and write their own "main". This could accept different
+    config formats, customize the logger, etc
+ */
 package main
 
 import (

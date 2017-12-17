@@ -1,3 +1,7 @@
+/*
+    - SAMPLER: Keep one event every X and discart the rest. Useful for sampling
+    input data
+ */
 package proc
 
 import (
