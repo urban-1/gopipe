@@ -2,6 +2,7 @@ package proc
 
 import (
     "crypto/md5"
+    "encoding/hex"
     . "gopipe/core"
     log "github.com/sirupsen/logrus"
 )
@@ -47,7 +48,7 @@ func NewMd5Proc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 func (p *Md5Proc) Run() {
     log.Debug("Md5Proc Starting ... ")
     p.MustStop = false
-    hash := md5.New()
+
     for !p.MustStop {
         e := <- p.InQ
 
@@ -58,7 +59,9 @@ func (p *Md5Proc) Run() {
                 continue
             }
 
-            e.Data[p.OutFields[i]] = hash.Sum([]byte(b+p.Salt))
+
+            md5tmp := md5.Sum([]byte(b+p.Salt))
+            e.Data[p.OutFields[i]] = hex.EncodeToString(md5tmp[:])
         }
 
         p.OutQ<-e

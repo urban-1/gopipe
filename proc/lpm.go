@@ -132,14 +132,13 @@ func (p *LPMProc) Run() {
 }
 
 func (p *LPMProc) loadTree() {
-    p.TreeLock.Lock()
 
     f, err := os.Open(p.FilePath)
     if err != nil {
         log.Error("LPM: Could not load prefix file")
-        p.TreeLock.Unlock()
         return
     }
+    p.TreeLock.Lock()
 
     p.Tree = nradix.NewTree(100)
 

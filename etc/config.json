@@ -6,7 +6,7 @@
         "stats_every": 100000
     },
     "in": {
-        "module": "UDPStrInput",
+        "module": "TCPStrInput",
         "listen": "0.0.0.0",
         "port": 9092,
         "headers": ["hello", "test", "src"],
@@ -32,7 +32,8 @@
         {
             "module": "Md5Proc",
             "in_fields": ["host"],
-            "out_fields": ["host_hash"]
+            "out_fields": ["host_hash"],
+            "salt": "andPepper!"
         },
         {
             "module": "AddTimeProc",
