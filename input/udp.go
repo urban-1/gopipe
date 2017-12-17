@@ -1,3 +1,8 @@
+/*
+    - UDP: Listens on a UDP port for messages. Each packet is a separate message
+    and thus the message length is limitted by the packet length (and maybe
+    network MTU)
+ */
 package input
 
 import (
@@ -23,9 +28,8 @@ func init() {
     GetRegistryInstance()["UDPStrInput"] = NewUDPStrInput
 }
 
-/**
- * The base structure for common UDP Ops
- */
+
+// The base structure for common UDP Ops
 type UDPJSONInput struct {
     *ComponentBase
     // Keep a referece to the struct responsible for decoding...
@@ -93,14 +97,14 @@ func (p *UDPJSONInput) Run() {
     }
 }
 
-/**
- * UDP CSV
- *
- * Config parameters:
- *
- * -    headers:    string array
- * -    separator:  char
- * -    convert:    bool
+/*
+ UDP CSV
+
+ Config parameters:
+
+     -    headers:    string array
+     -    separator:  char
+     -    convert:    bool
  */
 type UDPCSVInput struct {
     *UDPJSONInput
@@ -136,10 +140,7 @@ func NewUDPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
-/**
- * UDP Raw Implementation
- *
- */
+// UDP Raw Implementation
 type UDPRawInput struct {
     *UDPJSONInput
 }
@@ -158,9 +159,8 @@ func NewUDPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
-/**
- * UDP String implementation
- */
+
+// UDP String implementation
 type UDPStrInput struct {
     *UDPJSONInput
 }

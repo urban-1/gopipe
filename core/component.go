@@ -1,5 +1,4 @@
-//
-// Core package contains all common structs and functions. These include
+// Core package contains all common structs and functions.
 //
 // - Config: An alias to `map[string]interface{}`
 //

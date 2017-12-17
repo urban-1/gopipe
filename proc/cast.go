@@ -1,3 +1,6 @@
+/*
+    - CAST: Change the type of a field. Supported targets are int, float and string
+ */
 package proc
 
 import (

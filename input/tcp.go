@@ -1,3 +1,9 @@
+/*
+    This package contains all the input modules responsible for generating events in the pipe.
+
+    - TCP: Listen on a TCP socket for messages. Each line is processed as a
+    separate message. Maximum line length is 65000 bytes
+ */
 package input
 
 import (
@@ -25,9 +31,8 @@ func init() {
     GetRegistryInstance()["TCPRawInput"] = NewTCPRawInput
 }
 
-/**
- * The base structure for common TCP Ops
- */
+// The base structure for common TCP Ops. The default implementation is using
+// JSON message format
 type TCPJSONInput struct {
     *ComponentBase
     // Keep a referece to the struct responsible for decoding...
@@ -36,6 +41,7 @@ type TCPJSONInput struct {
     port uint32
     Sock net.Listener
 }
+
 
 func NewTCPJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating TCPJSONInput")
@@ -78,7 +84,11 @@ func (p *TCPJSONInput) Run() {
     }
 }
 
-
+// This is a goroutine that will be spawned for each client connected to the
+// socket.
+//
+// NOTE: Max line/message length is 65k. If this is exceeded, the server will
+// hang-up this connection
 func (p *TCPJSONInput) handleRequest(conn net.Conn) {
     // Make a buffer to hold incoming data.
     reader := bufio.NewReader(conn)
@@ -128,9 +138,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
     }
 }
 
-/**
- * TCP CSV implementation
- */
+// TCP CSV implementation
 type TCPCSVInput struct {
     *TCPJSONInput
 }
@@ -165,9 +173,8 @@ func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
-/**
- * TCP Raw implementation
- */
+
+// TCP Raw implementation
 type TCPRawInput struct {
     *TCPJSONInput
 }
@@ -186,9 +193,9 @@ func NewTCPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
-/**
- * TCP String implementation
- */
+
+
+// TCP String implementation
 type TCPStrInput struct {
     *TCPJSONInput
 }

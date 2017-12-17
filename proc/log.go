@@ -1,3 +1,7 @@
+/*
+    - LOG: Use the logger (logrus) to print the event. This component does not
+    modify the events in any way. NOTE: This can also be used as an OUTPUT component!
+ */
 package proc
 
 import (

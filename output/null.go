@@ -1,3 +1,7 @@
+/*
+    - NULL: Just empty that channel! NOTE: This component CANNOT be used in the
+    processing stages, since whereever put, it acts like a blackhole...
+ */
 package output
 
 import (
@@ -21,10 +25,6 @@ func NewNullOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config)
     m.Tag = "OUT-NULL"
 
     return m
-}
-
-func (p *NullOutput) Stop() {
-    p.MustStop = true
 }
 
 func (p *NullOutput) Run() {

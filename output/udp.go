@@ -1,3 +1,7 @@
+/*
+    - UDP: Send UDP datagrams out ... Particularly useful for flow sampler and
+    replication configurations
+ */
 package output
 
 import (
@@ -12,8 +16,8 @@ func init() {
     log.Info("Registering UDPJSONOutput")
     GetRegistryInstance()["UDPJSONOutput"] = NewUDPJSONOutput
 
-    // log.Info("Registering UDPCSVOutput")
-    // GetRegistryInstance()["UDPCSVOutput"] = NewUDPStrOutput
+    log.Info("Registering UDPCSVOutput")
+    GetRegistryInstance()["UDPCSVOutput"] = NewUDPStrOutput
 
     log.Info("Registering UDPRawOutput")
     GetRegistryInstance()["UDPRawOutput"] = NewUDPRawOutput
@@ -22,9 +26,8 @@ func init() {
     GetRegistryInstance()["UDPStrOutput"] = NewUDPStrOutput
 }
 
-/**
- * The base structure for common UDP Ops
- */
+
+// The base structure for common UDP Ops
 type UDPJSONOutput struct {
     *ComponentBase
     // Keep a referece to the struct responsible for decoding...
@@ -85,10 +88,7 @@ func (p *UDPJSONOutput) Run() {
 }
 
 
-/**
- * UDP CSV Implementation
- *
- */
+// UDP CSV Implementation
 type UDPCSVOutput struct {
     *UDPJSONOutput
 }
@@ -108,10 +108,7 @@ func NewUDPCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 }
 
 
-/**
- * UDP Raw Implementation
- *
- */
+// UDP Raw Implementation
 type UDPRawOutput struct {
     *UDPJSONOutput
 }
@@ -130,9 +127,7 @@ func NewUDPRawOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
-/**
- * UDP String implementation
- */
+// UDP String implementation
 type UDPStrOutput struct {
     *UDPJSONOutput
 }

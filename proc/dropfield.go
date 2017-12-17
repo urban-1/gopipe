@@ -1,3 +1,6 @@
+/*
+    - DROP: Remove a field from the event's data
+ */
 package proc
 
 import (

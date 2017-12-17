@@ -1,3 +1,12 @@
+/*
+    The package having the processing components.
+
+    Every processing component reads, modifies messages and pushes to the output
+    channel.
+
+    - ADDTIME: This component gets the Event's timestamp and embeds it into the
+    data (under the given key/name)
+ */
 package proc
 
 import (
