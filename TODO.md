@@ -10,3 +10,4 @@
     such that extending with new codecs does not require new component structs.
     Maybe via a codec Registry?
 -   ADD TASKS! (background jobs not touching events)
+-   Add command input!
