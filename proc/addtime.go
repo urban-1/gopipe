@@ -41,7 +41,10 @@ func (p *AddTimeProc) Run() {
     p.MustStop = false
     for !p.MustStop {
         log.Debug("AddTimeProc Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         e.Data[p.FieldName] = uint64(e.Timestamp.UnixNano()/1000000)
         p.OutQ<-e

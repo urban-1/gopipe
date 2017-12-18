@@ -1,18 +1,20 @@
-hash: 7a87f5c7c684e547cdc2adfe1f0768250aa939b9b700636c3e39d0ce37721792
-updated: 2017-12-16T09:53:00.373815505Z
+hash: 7bd6888eadfafd184b3061c852e05f88e7b76ed81919395f0cab05b06dd7d9a9
+updated: 2017-12-18T10:27:22.930640318Z
 imports:
 - name: github.com/asergeyev/nradix
   version: 3872ab85bb568d5400c3f53ac4d903744b2c8ea9
+- name: github.com/Knetic/govaluate
+  version: d216395917cc49052c7c7094cf57f09657ca08a8
 - name: github.com/sirupsen/logrus
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
 - name: github.com/urfave/cli
   version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
 - name: golang.org/x/crypto
-  version: 9f005a07e0d31d45e6656d241bb5c0f2efd4bc94
+  version: 94eea52f7b742c7cbe0b03b22f0c4c8631ece122
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: 0ac51a24ef1c37380f98ba8b98f56e3bffd59850
+  version: 571f7bbbe08da2a8955aed9d4db316e78630e9a3
   subpackages:
   - unix
   - windows

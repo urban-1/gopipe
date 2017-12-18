@@ -5,3 +5,5 @@ import:
 - package: github.com/urfave/cli
   version: ^1.20.0
 - package: github.com/asergeyev/nradix
+- package: github.com/Knetic/govaluate
+  version: ^3.0.0

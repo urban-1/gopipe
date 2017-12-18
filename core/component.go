@@ -9,6 +9,7 @@ package core
 import (
     "fmt"
     "time"
+    "errors"
     log "github.com/sirupsen/logrus"
 )
 
@@ -126,5 +127,30 @@ func  (p *ComponentBase) PrintStats() {
     }
 
     log.Infof("%15s> iq=%-5d oq=%-5d %s", p.Tag, inQLen, outQLen, p.Stats.DebugStr())
+
+}
+
+// Gets an event out of the inQ and checks if the module should run based on
+// the ShouldRun state (if/else). If the module should run, this method returns
+// the event to be processes. If not, the event will be passed down to the outQ
+// of the component
+func (p *ComponentBase) ShouldRun() (*Event, error) {
+
+    e := <- p.InQ
+    if e.ShouldRun.Size() == 0 {
+        return e, nil
+    }
+
+    // Here we have a state! Check it
+    state, _ := e.ShouldRun.Top()
+    log.Debug("ShouldRun State ", state)
+
+    // Found false...
+    if !state {
+        p.OutQ<-e
+        return nil, errors.New("No need to run")
+    }
+
+    return e, nil
 
 }

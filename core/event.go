@@ -15,11 +15,12 @@ import (
 type Event struct {
     Timestamp time.Time
     Data map[string]interface{}
+    ShouldRun *BoolStack
 }
 
 // Create a new event with the given data
 func NewEvent(data map[string]interface{}) *Event {
-    return &Event{time.Now(), data}
+    return &Event{time.Now(), data, &BoolStack{}}
 }
 
 // Get the string replresentation of this event

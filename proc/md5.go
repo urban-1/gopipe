@@ -54,7 +54,11 @@ func (p *Md5Proc) Run() {
     p.MustStop = false
 
     for !p.MustStop {
-        e := <- p.InQ
+        // Check if we should run (based on the events' if else state)
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         for i, ifield := range p.InFields {
             b, ok := e.Data[ifield].(string)
