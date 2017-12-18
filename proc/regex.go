@@ -1,5 +1,5 @@
 /*
-    - REGEX: Given a regex with names captures, convert each event from a text
+    - REGEX: Given a regex with named captures, convert each event from a text
     one to a data one (using the "message" field, which is where Str codecs store
     their output)
  */

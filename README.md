@@ -56,9 +56,13 @@ hope we will extend as needed with the help of the community.
 -   **[Add time](docs/proc/addtime.md)**: Adds timestamp to the data
 -   **[Cast](docs/proc/cast.md)**: Converts fields to different data types
 -   **[Drop field](docs/proc/dropfield.md)**: Removes fields from data
+-   **[If/Else](docs/proc/ifelse.md)**: Control flow with if/else/endif
 -   **[In List](docs/proc/inlist.md)**: Checks a field against a list of values
 -   **[Log](docs/proc/log.md)**: Logs the events' data to stdout
 -   **[Longest Prefix Match](docs/proc/lpm.md)**: Performs LPM and attaches meta-data to the events' data
+-   **[MD5](docs/proc/md5.md)**: Hash event's fields
+-   **[Regex](docs/proc/regex.md)**: Convert string events into data ones
+-   **[Sampler](docs/proc/sampler.md)**: Selectively forward events (one every X)
 
 ### Output
 
