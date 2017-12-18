@@ -58,7 +58,7 @@ hope we will extend as needed with the help of the community.
 -   **[Drop field](docs/proc/dropfield.md)**: Removes fields from data
 -   **[In List](docs/proc/inlist.md)**: Checks a field against a list of values
 -   **[Log](docs/proc/log.md)**: Logs the events' data to stdout
--   **Longest Prefix Match**: Performs LPM and attaches meta-data to the events' data
+-   **[Longest Prefix Match](docs/proc/lpm.md)**: Performs LPM and attaches meta-data to the events' data
 
 ### Output
 
