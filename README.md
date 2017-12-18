@@ -142,22 +142,25 @@ fields, etc
             "types": ["int"]
         },
         {
-            "module": "Md5Proc",
-            "in_fields": ["host"],
-            "out_fields": ["host_hash"],
-            "salt": "andPepper!"
-        },
-        {
             "module": "InListProc",
             "in_field": "port",
             "out_field": "port_block",
             "reload_minutes": 100000000,
-            "list": ["8080", "443", "10000", "8924"]
+            "list": ["8080", "443", "23230", "14572", "17018"]
         },
-        {
-            "module": "AddTimeProc",
-            "field_name": "_timestamp"
-        },
+        {"module": "if",  "condition": "port_block == true "},
+            {
+                "module": "Md5Proc",
+                "in_fields": ["host"],
+                "out_fields": ["host_hash"],
+                "salt": "andPepper!"
+            },
+        {"module": "else"},
+            {
+                "module": "AddTimeProc",
+                "field_name": "_timestamp"
+            },
+        {"module": "endif"},
         {
             "module": "LogProc",
             "level": "info"
