@@ -41,7 +41,10 @@ func (p *RegexProc) Run() {
     p.MustStop = false
     for !p.MustStop {
 
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         allok := false
 

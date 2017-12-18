@@ -46,7 +46,10 @@ func (p *AddFieldProc) Run() {
     p.MustStop = false
     for !p.MustStop {
         log.Debug("AddFieldProc Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         e.Data[p.FieldName] = p.Value
         p.OutQ<-e

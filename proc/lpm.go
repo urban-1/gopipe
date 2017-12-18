@@ -113,7 +113,10 @@ func (p *LPMProc) Run() {
     for !p.MustStop {
         // Do not read until we lock the tree!
         log.Debug("LPMProc Reading ", p.MustStop)
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         p.TreeLock.Lock()
 

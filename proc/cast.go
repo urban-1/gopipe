@@ -45,7 +45,10 @@ func (p *CastProc) Run() {
     p.MustStop = false
     for !p.MustStop {
 
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         for index, field := range p.Fields {
             value, ok := e.Data[field]

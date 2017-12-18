@@ -85,7 +85,10 @@ func (p *InListProc) Run() {
 
     for !p.MustStop {
         log.Debug("InListProc Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         what, ok := e.Data[p.InField]
         if !ok {

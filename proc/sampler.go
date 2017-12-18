@@ -33,7 +33,10 @@ func (p *SamplerProc) Run() {
     p.MustStop = false
     for !p.MustStop {
         log.Debug("SamplerProc Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
         p.StatsAddMesg()
 
         if (p.Stats.MsgCount % p.Every) != 0 {

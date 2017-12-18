@@ -35,7 +35,10 @@ func (p *DropFieldProc) Run() {
     p.MustStop = false
     for !p.MustStop {
         log.Debug("DropFieldProc Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         delete(e.Data, p.FieldName)
         p.OutQ<-e

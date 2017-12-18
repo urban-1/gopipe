@@ -45,7 +45,10 @@ func (p *LogProc) Run() {
     p.MustStop = false
     for !p.MustStop {
         log.Debug("LogProc Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
         p.logFunc("LogProc: " + e.ToString())
 
         if p.OutQ != nil {
