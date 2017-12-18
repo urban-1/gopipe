@@ -46,7 +46,7 @@ hope we will extend as needed with the help of the community.
 
 ### Inputs
 
--   **TCP**: Supporting raw, string, CSV and JSON
+-   **[TCP](docs/input/TCP.md)**: Supporting raw, string, CSV and JSON
 -   **UDP**: Supporting raw, string, CSV and JSON
 
 ### Processing
