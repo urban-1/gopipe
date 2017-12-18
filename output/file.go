@@ -157,7 +157,6 @@ func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     m.Tag = "OUT-FILE-CSV"
 
     // Change to CSV
-
     c := &CSVLineCodec{nil, ","[0], true}
     cfgbytes, _ := json.Marshal(cfg)
     json.Unmarshal(cfgbytes, c)

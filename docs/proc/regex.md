@@ -29,5 +29,16 @@ To:
 Note that the `port` is still a string but it can be converted to `int` with the
 use of `CastProc`.
 
+The regex component accepts an array of regular expressions that are going to be
+tried one-by-one top-down. If not regex matches, then the event is dropped
+and a warning is printed. If you want to change this and keep the event, you can
+use a catch-all case like:
+
+```
+    "regexes": [
+        ...
+        (?P<message>.*)
+    ]
+```
 
 Full regex syntax available at: https://github.com/google/re2/wiki/Syntax
