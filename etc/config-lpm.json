@@ -28,6 +28,15 @@
                 {"newkey": "sky_{{in_field}}_prefix", "metakey": "prefix"},
                 {"newkey": "sky_{{in_field}}_asn", "metakey": "asn"}
             ]
+        },
+        {
+            "module": "AddFieldProc",
+            "field_name": "test",
+            "value": "added..."
+        },
+        {
+            "module": "LogProc",
+            "level": "info"
         }
     ],
     "out": {
