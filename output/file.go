@@ -108,13 +108,15 @@ func (p *FileJSONOutput) Run() {
     p.getNewFile()
 
     var data []byte
-    var err error
 
     for !p.MustStop {
         p.checkRotate()
 
         log.Debug("FileJSONOutput Reading")
-        e := <- p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         data, err = p.Encoder.ToBytes(e.Data)
         if err != nil {

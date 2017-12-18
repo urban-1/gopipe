@@ -64,7 +64,10 @@ func (p *UDPJSONOutput) Run() {
     var data []byte
 
     for {
-        e := <-p.InQ
+        e, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         data, err = p.Encoder.ToBytes(e.Data)
         if err != nil {

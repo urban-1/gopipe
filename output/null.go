@@ -32,7 +32,10 @@ func (p *NullOutput) Run() {
     log.Debug("NullOutput Starting ... ")
     for !p.MustStop {
         log.Debug("NullOutput Reading")
-        <-p.InQ
+        _, err := p.ShouldRun()
+        if err != nil {
+            continue
+        }
 
         // Stats
         p.StatsAddMesg()
