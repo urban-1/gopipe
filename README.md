@@ -51,7 +51,7 @@ hope we will extend as needed with the help of the community.
 
 ### Processing
 
--   **[Add field](docs/proc/addtime.md)**: Add a new field based on static value
+-   **[Add field](docs/proc/addfield.md)**: Add a new field based on static value
     or expression
 -   **[Add time](docs/proc/addtime.md)**: Adds timestamp to the data
 -   **[Cast](docs/proc/cast.md)**: Converts fields to different data types
