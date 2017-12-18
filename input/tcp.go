@@ -127,6 +127,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
         }
 
         e := NewEvent(json_data)
+        json_data["_from"] = conn.RemoteAddr().String()
         p.OutQ<-e
 
         tmpdata = []byte{}

@@ -45,10 +45,15 @@
             },
         {"module": "else"},
             {
-                "module": "AddTimeProc",
-                "field_name": "_timestamp"
+                "module": "AddFieldProc",
+                "field_name": "10port",
+                "expression": "port * 10"
             },
         {"module": "endif"},
+        {
+            "module": "AddTimeProc",
+            "field_name": "_timestamp"
+        },
         {
             "module": "LogProc",
             "level": "info"

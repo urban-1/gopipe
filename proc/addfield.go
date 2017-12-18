@@ -12,6 +12,7 @@ package proc
 import (
     . "gopipe/core"
     log "github.com/sirupsen/logrus"
+    "github.com/Knetic/govaluate"
 )
 
 func init() {
@@ -23,6 +24,7 @@ type AddFieldProc struct {
     *ComponentBase
     FieldName string
     Value interface{}
+    Expr *govaluate.EvaluableExpression
 }
 
 func NewAddFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
@@ -31,11 +33,23 @@ func NewAddFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     if !ok {
         panic("ADD Field: Field name is required")
     }
-    value, ok := cfg["value"]
+
+    strexp, ok := cfg["expression"].(string)
     if !ok {
-        panic("ADD Field: Field value is required")
+        strexp = ""
     }
-    m := &AddFieldProc{NewComponentBase(inQ, outQ, cfg), field_name, value}
+    value, ok := cfg["value"]
+
+    expression, err := govaluate.NewEvaluableExpression(strexp)
+    if err != nil && !ok  {
+        panic("Add field: Either expression or value is required")
+    }
+
+    if err == nil {
+        value = nil
+    }
+
+    m := &AddFieldProc{NewComponentBase(inQ, outQ, cfg), field_name, value, expression}
     m.Tag = "PROC-ADDFIELD"
     return m
 }
@@ -51,7 +65,17 @@ func (p *AddFieldProc) Run() {
             continue
         }
 
-        e.Data[p.FieldName] = p.Value
+        if p.Value == nil {
+            result, err := p.Expr.Evaluate(e.Data)
+            log.Debug("AddFieldProc EXPR")
+            if err != nil {
+                log.Warn(p.Tag, ": ", err.Error())
+            }
+            e.Data[p.FieldName] = result
+        } else {
+            log.Debug("AddFieldProc VAL")
+            e.Data[p.FieldName] = p.Value
+        }
         p.OutQ<-e
 
         // Stats

@@ -86,6 +86,8 @@ func (p *UDPJSONInput) Run() {
             continue
         }
 
+        json_data["_from"] = addr.String()
+
         e := NewEvent(json_data)
         p.OutQ<-e
 

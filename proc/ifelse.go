@@ -95,10 +95,7 @@ func (p *ElseProc) Run() {
     p.MustStop = false
     for !p.MustStop {
         log.Debug("ElseProc Reading")
-        e, err := p.ShouldRun()
-        if err != nil {
-            continue
-        }
+        e := <- p.InQ
 
         result, err := e.ShouldRun.Pop()
         if err != nil {
