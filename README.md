@@ -46,8 +46,8 @@ hope we will extend as needed with the help of the community.
 
 ### Inputs
 
--   **[TCP](docs/input/TCP.md)**: Supporting raw, string, CSV and JSON
--   **[UDP](docs/input/UDP.md)**: Supporting raw, string, CSV and JSON
+-   **[TCP](docs/input/tcp.md)**: Supporting raw, string, CSV and JSON
+-   **[UDP](docs/input/udp.md)**: Supporting raw, string, CSV and JSON
 
 ### Processing
 
@@ -62,9 +62,9 @@ hope we will extend as needed with the help of the community.
 
 ### Output
 
--   **File**: Supporting CSV and JSON
--   **Null**: Blackholes events
--   **UDP**: Supporting raw and string
+-   **[File](docs/output/file.md)**: Supporting CSV and JSON
+-   **[Null](docs/output/null.md)**: Blackholes events
+-   **[UDP](docs/output/udp.md)**: Supporting raw and string
 
 
 ## Example Configs

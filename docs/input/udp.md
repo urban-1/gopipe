@@ -12,7 +12,7 @@ which Codec is used:
  Example config:
 
     {
-        "module": "UDPStrInput",
+        "module": "UDPJSONInput",
         "listen": "0.0.0.0",
         "port": 9092
     }
@@ -22,6 +22,9 @@ which Codec is used:
 Reads each line and interprets it as CSV. Extra parameters:
 
     {
+        "module": "UDPCSVInput",
+        "listen": "0.0.0.0",
+        "port": 9092
         "headers": ["hello", "test", "src"],
         "separator": ",",
         "convert": false

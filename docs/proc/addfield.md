@@ -12,7 +12,7 @@ of this plugin looks like:
 ```
 
 Although adding a static value to all the events is useful (for example add the
-processing server hostname), it is not have that many applications... It is
+processing server hostname), it does not have that many applications... It is
 beneficial to be able to perform some basic operations/expressions, for example:
 
 ```
