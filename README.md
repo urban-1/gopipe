@@ -9,7 +9,7 @@ modular way. Events can contain:
 
 -   Raw unformated bytes (`Data["raw"]`)
 -   String contents (`Data["message"]`)
--   JSONdecode value (`Data` as `map[string]interface{}`)
+-   Decoded JSON value (`Data` as `map[string]interface{}`)
 
 We call our modules "Components" and these fall into three categories:
 
@@ -245,7 +245,7 @@ Example script to load and format them:
 
 Hello! The idea is that we can provide JSON-configurable pipeline processing
 capability for the end user. However, we do need more components for various
-jobs and maybe codes!
+jobs and maybe codecs!
 
 -   Components should be extremely easy to implement. Use `proc/log.go` as a
     starting point (~60 LOC) to implement you component.
@@ -253,7 +253,7 @@ jobs and maybe codes!
 -   Codecs: Have a quick look into `linecodecs.go`. One can easily implement new
     line encoders/decoders. These can then be plugged into input/output modules
 
-As always, comments, suggestion, documentation, bug reports, etc are more than
+As always, comments, suggestions, documentation, bug reports, etc are more than
 welcome :)
 
 [Also, you might have detected that this code has no tests! We are new to Go and
