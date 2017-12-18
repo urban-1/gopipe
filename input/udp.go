@@ -86,7 +86,7 @@ func (p *UDPJSONInput) Run() {
             continue
         }
 
-        json_data["_from_addr"], json_data["_from_port"], _ = net.SplitHostPort(conn.RemoteAddr().String())
+        json_data["_from_addr"], json_data["_from_port"], _ = net.SplitHostPort(addr.String())
 
         e := NewEvent(json_data)
         p.OutQ<-e

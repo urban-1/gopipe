@@ -137,16 +137,16 @@ func (p *LPMProc) Run() {
                 log.Error("LPM error in find: ", err.Error())
                 continue
             }
-            if meta == nil {
-                log.Debug("Could not find prefix for '", ifield, "' -> ", e.Data[ifield].(string))
-                continue
-            }
-
 
             // Generate new fields
             for _, ofield := range p.OutFields {
                 new_field := strings.Replace(ofield.NewKey, "{{in_field}}", ifield, 1)
-                e.Data[new_field] = meta.(map[string]interface{})[ofield.MetaKey]
+                if meta == nil {
+                    log.Debug("Could not find prefix for '", ifield, "' -> ", e.Data[ifield].(string))
+                    e.Data[new_field] = ""
+                } else {
+                    e.Data[new_field] = meta.(map[string]interface{})[ofield.MetaKey]
+                }
             }
         }
 

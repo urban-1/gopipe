@@ -11,3 +11,4 @@
     Maybe via a codec Registry?
 -   ADD TASKS! (background jobs not touching events)
 -   Add command input!
+-   SQL output compoment: https://github.com/volatiletech/sqlboiler

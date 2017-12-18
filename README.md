@@ -47,15 +47,17 @@ hope we will extend as needed with the help of the community.
 ### Inputs
 
 -   **[TCP](docs/input/TCP.md)**: Supporting raw, string, CSV and JSON
--   **UDP**: Supporting raw, string, CSV and JSON
+-   **[UDP](docs/input/UDP.md)**: Supporting raw, string, CSV and JSON
 
 ### Processing
 
--   **Add time**: Adds timestamp to the data
--   **Cast**: Converts fields to different data types
--   **Drop field**: Removes fields from data
--   **In List**: Checks a field against a list of values
--   **Log**: Logs the events' data to stdout
+-   **[Add field](docs/proc/addtime.md)**: Add a new field based on static value
+    or expression
+-   **[Add time](docs/proc/addtime.md)**: Adds timestamp to the data
+-   **[Cast](docs/proc/cast.md)**: Converts fields to different data types
+-   **[Drop field](docs/proc/dropfield.md)**: Removes fields from data
+-   **[In List](docs/proc/inlist.md)**: Checks a field against a list of values
+-   **[Log](docs/proc/log.md)**: Logs the events' data to stdout
 -   **Longest Prefix Match**: Performs LPM and attaches meta-data to the events' data
 
 ### Output
@@ -175,7 +177,7 @@ fields, etc
 }
 ```
 
-### LPM
+### Longest Prefix Match
 
 Receive on a TCP socket listening for JSON line:
 ```
@@ -215,29 +217,6 @@ Receive on a TCP socket listening for JSON line:
     }
 }
 ```
-
-Data are expected in the following format:
-
-    prefix/len json-meta-data
-
-example:
-
-    160.202.15.0/24 {"asn": 1}
-    176.52.166.0/24 {"asn": 1}
-    176.52.167.0/24 {"asn": 1}
-    198.22.130.0/24 {"asn": 1}
-    199.246.102.0/24 {"asn": 1}
-    200.52.157.0/24 {"asn": 1}
-    202.134.183.0/24 {"asn": 1}
-    202.63.238.0/24 {"asn": 1}
-    207.227.224.0/22 {"asn": 1}
-    207.227.228.0/22 {"asn": 1}
-
-Example script to load and format them:
-
-    curl http://lg01.infra.ring.nlnog.net/table.txt | awk -F' ' '{print $1,"{\"asn\": "$2"}"}' > ~/tmp/prefix-asn.txt
-
-
 
 # Limitations
 

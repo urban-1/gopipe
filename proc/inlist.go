@@ -5,7 +5,7 @@
     in the list are strings and thus every the data field is converted to string
     to be checked against the list. The main function/purpose of this plugin is
     to verify against lists that change regularly (ex IP blacklist) and thus the
-    analysis has to take place in the correct time (the time of the event) and
+    analysis has to take place at the correct time (the time of the event) and
     cannot be performed in later time!
  */
 package proc
@@ -55,8 +55,15 @@ func NewInListProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
     fpath, ok2 := cfg["filepath"].(string)
 
+    // If none provided, complain
     if !ok1 && !ok2 {
         panic("InList requires a list either in 'list' or in 'filepath'")
+    }
+
+    // If filepath provided, ignore config list
+    if ok2 {
+        log.Info("Clearing config list since file path is present")
+        list = nil
     }
 
     m := &InListProc{NewComponentBase(inQ, outQ, cfg),
