@@ -6,7 +6,7 @@
         "stats_every": 100000
     },
     "in": {
-        "module": "TCPStrInput",
+        "module": "UDPCSVInput",
         "listen": "0.0.0.0",
         "port": 9092,
         "headers": ["hello", "test", "src"],

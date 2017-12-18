@@ -12,6 +12,7 @@ import (
     "net"
     "bufio"
     "strconv"
+    "encoding/json"
     log "github.com/sirupsen/logrus"
 
     . "gopipe/core"
@@ -147,29 +148,16 @@ type TCPCSVInput struct {
 func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating TCPCSVInput")
 
-    headers := []string{}
-    if tmp, ok := cfg["headers"].([]interface{}); ok {
-        headers = InterfaceToStringArray(tmp)
-    }
-    log.Infof("  Headers %v", headers)
-
-    sep := ","[0]
-    if tmp, ok := cfg["separator"].(string); ok {
-        sep = tmp[0]
-    }
-
-    convert := true
-    if tmp, ok := cfg["convert"].(bool); ok {
-        convert = tmp
-    }
-
     // Defaults...
     m := TCPCSVInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
 
     m.Tag = "IN-TCP-CSV"
 
     // Change to CSV
-    m.Decoder = &CSVLineCodec{headers, sep, convert}
+    c := &CSVLineCodec{nil, ","[0], true}
+    cfgbytes, _ := json.Marshal(cfg)
+    json.Unmarshal(cfgbytes, c)
+    m.Decoder = c
 
     return &m
 }

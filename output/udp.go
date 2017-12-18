@@ -7,6 +7,7 @@ package output
 import (
     "net"
     "strconv"
+    "encoding/json"
     log "github.com/sirupsen/logrus"
 
     . "gopipe/core"
@@ -105,7 +106,10 @@ func NewUDPCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     m.Tag = "OUT-UDP-CSV"
 
     // Change to CSV
-    m.Encoder = &CSVLineCodec{}
+    c := &CSVLineCodec{nil, ","[0], true}
+    cfgbytes, _ := json.Marshal(cfg)
+    json.Unmarshal(cfgbytes, c)
+    m.Encoder = c
 
     return &m
 }

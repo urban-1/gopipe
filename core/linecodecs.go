@@ -49,9 +49,9 @@ func (*JSONLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 // CSV implementation: If convert is set to true, the FromBytes will try to
 // convert values to int/float types using  strconv.ParseInt and strconv.ParseFloat
 type CSVLineCodec struct {
-    Headers []string
-    Separator byte
-    Convert bool
+    Headers []string `json:"headers"`
+    Separator byte `json:"separator"`
+    Convert bool `json:"convert"`
 }
 
 func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {

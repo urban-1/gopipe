@@ -36,8 +36,6 @@ func NewMd5Proc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
         out_fields = InterfaceToStringArray(tmp)
     }
 
-    log.Error(out_fields)
-
     salt, ok := cfg["salt"].(string)
     if !ok {
         salt = ""
