@@ -34,7 +34,7 @@ however, this is a Go learning exercise to replicate the C++ code...
 3. How is that different? We focus on a systems perspective and we want this
 framework to be more network/data oriented rather than `log`s oriented:
     -   Raw data handling - see the `flowreplicator.json` configuration.
-    -   FUTURE: Allows the user to write more logic, still based on config (if/else support)
+    -   Allows the user to write more logic, still based on config (if/else support)
     -   FUTURE: Support tasks to feed and update processing module's data
 
 4. What are the future plans: We plan to maintain and extend this
