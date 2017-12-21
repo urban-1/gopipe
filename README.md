@@ -35,7 +35,7 @@ however, this is a Go learning exercise to replicate the C++ code...
 framework to be more network/data oriented rather than `log`s oriented:
     -   Raw data handling - see the `flowreplicator.json` configuration.
     -   Allows the user to write more logic, still based on config (if/else support)
-    -   FUTURE: Support tasks to feed and update processing module's data
+    -   (Experimental) Support tasks to feed and update processing module's data
 
 4. What are the future plans: We plan to maintain and extend this
 until we fully port our C++ code... Maintenance will continue but we kinda
@@ -220,6 +220,32 @@ Receive on a TCP socket listening for JSON line:
         "file_name_format": "gopipe-20060102-150405.json"
     }
 }
+```
+
+### Tasks
+
+The following config part defines a task that runs every 10 seconds. Usually you
+would like to update file sources for `InListProc` and `LPMProc` components...
+In such cases the idea is that you have a small shell-script somewhere in your
+system and you call that (last action should be a `mv` to replace the file).
+
+```
+...
+    ],
+    "out": {
+        "module": "FileJSONOutput",
+        "rotate_seconds": 60,
+        "folder": "/tmp",
+        "file_name_format": "gopipe-20060102-150405.json"
+    },
+    "tasks": [
+        {
+            "name": "LSing...",
+            "command": ["ls", "-al"],
+            "interval_seconds": 10
+        }
+    ]
+...
 ```
 
 # Limitations
