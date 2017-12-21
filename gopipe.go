@@ -10,13 +10,15 @@
 package main
 
 import (
-    "os"
     "encoding/json"
     "io/ioutil"
     "os/signal"
+    "net/http"
     "os/exec"
     "syscall"
     "time"
+    "fmt"
+    "os"
 
     "github.com/urfave/cli"
     log "github.com/sirupsen/logrus"
@@ -26,6 +28,9 @@ import (
     _ "gopipe/output"
     _ "gopipe/proc"
 )
+
+// Store our modules
+var mods []core.Component
 
 func init() {
     customFormatter := new(log.TextFormatter)
@@ -68,6 +73,26 @@ func runTask(name string, parts []string, interval_seconds uint64) {
     	log.Debug("Command '"+name+"' run successfully...")
         time.Sleep(time.Duration(interval_seconds)*time.Second)
     }
+}
+
+func apiStatus(w http.ResponseWriter, r *http.Request) {
+    var err error
+
+    log.Info("ACCESS ", r.URL.Path)
+    ret := map[string]interface{}{
+        "components": []interface{}{},
+    }
+
+    for _, mod := range mods {
+        ret["components"] = append(ret["components"].([]interface{}), mod.GetStatsJSON())
+    }
+
+    var content []byte
+
+    if content, err = json.Marshal(ret); err != nil {
+        log.Error("Failed to parse component stats to JSON")
+    }
+    fmt.Fprintf(w, "%s", string(content))
 }
 
 func main() {
@@ -142,8 +167,6 @@ func main() {
             return cli.NewExitError("You need to define 'in' section in your config", -2)
         }
 
-        // Store our modules
-        var mods []core.Component
         // Store all channels
         var chans []chan *core.Event
 
@@ -190,6 +213,27 @@ func main() {
         mods = append(mods, tmp)
         log.Info("Created ", len(chans), " channels")
 
+        // Start the HTTP server
+
+
+        tmpport, ok :=  CFG["main"].(core.Config)["apiport"].(float64)
+        var apiport string
+        if !ok {
+            apiport = "9090"
+        } else {
+            apiport = fmt.Sprintf("%v",tmpport)
+        }
+        http.HandleFunc("/status", apiStatus) // set router
+
+        go func() error {
+            err = http.ListenAndServe(":"+apiport, nil) // set listen port
+            if err != nil {
+                log.Error("Failed to bind TCP port for API server")
+                log.Fatal("ListenAndServe: ", err)
+            }
+        }()
+
+
         // Spawn all tasks before starting processing
         tasks, ok := CFG["tasks"].([]interface{})
         for _, task := range tasks {
@@ -199,7 +243,7 @@ func main() {
                 uint64(task.(core.Config)["interval_seconds"].(float64)))
         }
 
-        // Start all (reverse order)
+        // Start all
         for _, mod := range mods {
             go mod.Run()
         }
@@ -238,7 +282,7 @@ func main() {
                 switch sig {
                 case syscall.SIGUSR1:
                     for _, mod := range mods {
-                        mod.PrintStats()
+                        mod.MustPrintStats()
                     }
                 case syscall.SIGUSR2:
                     //handle SIGTERM

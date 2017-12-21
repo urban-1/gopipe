@@ -3,10 +3,11 @@
         "num_cpus": 2,
         "log_level": 1,
         "channel_size": 50000,
-        "stats_every": 100000
+        "stats_every": 100000,
+        "apiport": 9090
     },
     "in": {
-        "module": "UDPCSVInput",
+        "module": "UDPStrInput",
         "listen": "0.0.0.0",
         "port": 9092,
         "headers": ["hello", "test", "src"],

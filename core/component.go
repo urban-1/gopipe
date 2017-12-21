@@ -25,6 +25,9 @@ type Component interface {
     Run()
 	Stop()
     PrintStats()
+    MustPrintStats()
+    GetTag() string
+    GetStatsJSON() map[string]interface{}
 }
 
 // Each component's processing stats
@@ -116,6 +119,12 @@ func  (p *ComponentBase) PrintStats() {
         return
     }
 
+    p.MustPrintStats()
+
+}
+
+// Logs the stats (always)
+func  (p *ComponentBase) MustPrintStats() {
     inQLen := -1
     if p.InQ != nil {
         inQLen = len(p.InQ)
@@ -128,6 +137,33 @@ func  (p *ComponentBase) PrintStats() {
 
     log.Infof("%15s> iq=%-5d oq=%-5d %s", p.Tag, inQLen, outQLen, p.Stats.DebugStr())
 
+}
+
+// Return this components' stats
+func (p *ComponentBase) GetStatsJSON() map[string]interface{} {
+    inQLen := -1
+    if p.InQ != nil {
+        inQLen = len(p.InQ)
+    }
+
+    outQLen := -1
+    if p.OutQ != nil {
+        outQLen = len(p.OutQ)
+    }
+
+    return map[string]interface{}{
+        "Name": p.Tag,
+        "InQ": inQLen,
+        "OutQ": outQLen,
+        "MsgRate": p.Stats.MsgRate,
+        "MsgCount": p.Stats.MsgCount,
+    }
+}
+
+
+// Return this components Tag/Name
+func (p *ComponentBase) GetTag() string {
+    return p.Tag
 }
 
 // Gets an event out of the inQ and checks if the module should run based on
