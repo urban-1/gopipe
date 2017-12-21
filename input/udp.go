@@ -8,6 +8,7 @@ package input
 import (
     "os"
     "net"
+    "encoding/json"
     "strconv"
     log "github.com/sirupsen/logrus"
 
@@ -19,7 +20,7 @@ func init() {
     GetRegistryInstance()["UDPJSONInput"] = NewUDPJSONInput
 
     log.Info("Registering UDPCSVInput")
-    GetRegistryInstance()["UDPCSVInput"] = NewUDPStrInput
+    GetRegistryInstance()["UDPCSVInput"] = NewUDPCSVInput
 
     log.Info("Registering UDPRawInput")
     GetRegistryInstance()["UDPRawInput"] = NewUDPRawInput
@@ -101,12 +102,6 @@ func (p *UDPJSONInput) Run() {
 
 /*
  UDP CSV
-
- Config parameters:
-
-     -    headers:    string array
-     -    separator:  char
-     -    convert:    bool
  */
 type UDPCSVInput struct {
     *UDPJSONInput
@@ -115,29 +110,17 @@ type UDPCSVInput struct {
 func NewUDPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating UDPCSVInput")
 
-    headers := []string{}
-    if tmp, ok := cfg["headers"].([]interface{}); ok {
-        headers = InterfaceToStringArray(tmp)
-    }
-    log.Infof("  Headers %v", headers)
-
-    sep := ","[0]
-    if tmp, ok := cfg["separator"].(string); ok {
-        sep = tmp[0]
-    }
-
-    convert := true
-    if tmp, ok := cfg["convert"].(bool); ok {
-        convert = tmp
-    }
-
     // Defaults...
     m := UDPCSVInput{NewUDPJSONInput(inQ, outQ, cfg).(*UDPJSONInput)}
 
     m.Tag = "IN-UDP-CSV"
 
     // Change to CSV
-    m.Decoder = &CSVLineCodec{headers, sep, convert}
+    c := &CSVLineCodec{nil, ","[0], true}
+    cfgbytes, _ := json.Marshal(cfg)
+    json.Unmarshal(cfgbytes, c)
+    log.Error(c)
+    m.Decoder = c
 
     return &m
 }

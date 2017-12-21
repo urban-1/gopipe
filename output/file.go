@@ -20,6 +20,7 @@ import (
     "os"
     "time"
     . "gopipe/core"
+    "encoding/json"
     log "github.com/sirupsen/logrus"
 )
 
@@ -151,28 +152,15 @@ type FileCSVOutput struct {
 func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     log.Info("Creating FileCSVOutput")
 
-    headers := []string{}
-    if tmp, ok := cfg["headers"].([]interface{}); ok {
-        headers = InterfaceToStringArray(tmp)
-    }
-    log.Infof("  Headers %v", headers)
-
-    sep := ","[0]
-    if tmp, ok := cfg["separator"].(string); ok {
-        sep = tmp[0]
-    }
-
-    convert := true
-    if tmp, ok := cfg["convert"].(bool); ok {
-        convert = tmp
-    }
-
     m := FileCSVOutput{NewFileJSONOutput(inQ, outQ, cfg).(*FileJSONOutput)}
 
     m.Tag = "OUT-FILE-CSV"
 
     // Change to CSV
-    m.Encoder = &CSVLineCodec{headers, sep, convert}
+    c := &CSVLineCodec{nil, ","[0], true}
+    cfgbytes, _ := json.Marshal(cfg)
+    json.Unmarshal(cfgbytes, c)
+    m.Encoder = c
 
     return &m
 }

@@ -1,5 +1,5 @@
 hash: 7bd6888eadfafd184b3061c852e05f88e7b76ed81919395f0cab05b06dd7d9a9
-updated: 2017-12-20T15:52:13.206428331Z
+updated: 2017-12-21T17:57:45.449291808Z
 imports:
 - name: github.com/asergeyev/nradix
   version: 3872ab85bb568d5400c3f53ac4d903744b2c8ea9
@@ -14,7 +14,7 @@ imports:
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: 571f7bbbe08da2a8955aed9d4db316e78630e9a3
+  version: d818ba11af4465e00c1998bd3f8a55603b422290
   subpackages:
   - unix
   - windows
