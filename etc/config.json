@@ -64,5 +64,12 @@
         "rotate_seconds": 60,
         "folder": "/tmp",
         "file_name_format": "gopipe-20060102-150405.json"
-    }
+    },
+    "tasks": [
+        {
+            "name": "LSing...",
+            "command": ["ls", "-al"],
+            "interval_seconds": 10
+        }
+    ]
 }

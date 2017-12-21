@@ -14,6 +14,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "os/signal"
+    "os/exec"
     "syscall"
     "time"
 
@@ -32,7 +33,8 @@ func init() {
     log.SetFormatter(customFormatter)
 }
 
-
+// Given the configuration of a module, the channels and the registry, create and
+// return an instance
 func instanceFromConfig(cfg core.Config, ch1 chan *core.Event, ch2 chan *core.Event, reg core.Registry) (core.Component, error) {
 
     module_name, ok := cfg["module"].(string)
@@ -52,6 +54,20 @@ func instanceFromConfig(cfg core.Config, ch1 chan *core.Event, ch2 chan *core.Ev
     log.Info("Loaded!")
 
     return mod_constructor(ch1, ch2, cfg), nil
+}
+
+// Loop for ever while sleeping for interval_seconds in every iteration
+// and execut a command (discarding output)
+func runTask(name string, parts []string, interval_seconds uint64) {
+    cmd, args := parts[0], parts[1:]
+    for {
+    	if err := exec.Command(cmd, args...).Run(); err != nil {
+            log.Error("Failed to run command '"+name+"': " + err.Error())
+            return
+    	}
+    	log.Debug("Command '"+name+"' run successfully...")
+        time.Sleep(time.Duration(interval_seconds)*time.Second)
+    }
 }
 
 func main() {
@@ -116,9 +132,6 @@ func main() {
             core.STATS_EVERY = uint64(tmp_f64)
         }
 
-
-
-
         // Load registry
         reg := core.GetRegistryInstance()
 
@@ -176,6 +189,15 @@ func main() {
         }
         mods = append(mods, tmp)
         log.Info("Created ", len(chans), " channels")
+
+        // Spawn all tasks before starting processing
+        tasks, ok := CFG["tasks"].([]interface{})
+        for _, task := range tasks {
+            go runTask(
+                task.(core.Config)["name"].(string),
+                core.InterfaceToStringArray(task.(core.Config)["command"].([]interface{})),
+                uint64(task.(core.Config)["interval_seconds"].(float64)))
+        }
 
         // Start all (reverse order)
         for _, mod := range mods {
