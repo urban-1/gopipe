@@ -230,7 +230,9 @@ func main() {
             if err != nil {
                 log.Error("Failed to bind TCP port for API server")
                 log.Fatal("ListenAndServe: ", err)
+                return err
             }
+	    return nil
         }()
 
 
