@@ -10,10 +10,6 @@
         "topics": ["kafka-test"],
         "group": "bigflow",
         "brokers": "localhost:9092",
-        "verbosity": "0",
-        "kafka_conf": {
-
-        },
         "topic_conf": {
             "enable.auto.commit": "true",
             "auto.commit.interval.ms": "1000",

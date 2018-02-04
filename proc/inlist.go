@@ -66,18 +66,24 @@ func NewInListProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
         list = nil
     }
 
+    r, ok := cfg["reload_minutes"].(float64)
+    reload := -1
+    if ok {
+        reload = int(r)
+    }
+
     m := &InListProc{NewComponentBase(inQ, outQ, cfg),
         list, &sync.Mutex{}, fpath,
         cfg["in_field"].(string),
         cfg["out_field"].(string),
-        int(cfg["reload_minutes"].(float64))}
+        reload}
 
     m.Tag = "PROC-INLIST"
     return m
 }
 
 func  (p *InListProc) Signal(signal string) {
-    log.Infof("InListProc Received signal'%s'", signal)
+    log.Infof("InListProc Received signal '%s'", signal)
     switch signal {
     case "reload":
         if p.FilePath == "" {
