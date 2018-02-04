@@ -134,7 +134,7 @@ func main() {
 
         DN , _ := os.Getwd()
         log.Info("Running from directory '", DN, "'")
-        log.Info("Loding configuration from '", c.String("config"), "'")
+        log.Info("Loading configuration from '", c.String("config"), "'")
         raw, err := ioutil.ReadFile(c.String("config"))
         if err != nil {
             log.Error(err.Error())

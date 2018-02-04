@@ -1,0 +1,59 @@
+{
+    "main": {
+        "num_cpus": 2,
+        "log_level": 1,
+        "channel_size": 50000,
+        "stats_every": 10000000
+    },
+    "in": {
+        "module": "KafkaJSONInput",
+        "topics": ["kafka-test"],
+        "group": "bigflow",
+        "brokers": "localhost:9092",
+        "verbosity": "0",
+        "kafka_conf": {
+
+        },
+        "topic_conf": {
+            "enable.auto.commit": "true",
+            "auto.commit.interval.ms": "1000",
+            "auto.offset.reset": "smallest"
+        }
+
+    },
+    "proc": [
+        {
+            "module": "AddTimeProc",
+            "field_name": "_timestamp"
+        },
+        {
+            "module": "DropFieldProc",
+            "field_name": "_timestamp"
+        },
+        {
+            "module": "LPMProc",
+            "filepath": "/tmp/prefix-asn.txt",
+            "reload_minutes": 1440,
+            "in_fields": ["src", "dst"],
+            "out_fields": [
+                {"newkey": "_{{in_field}}_prefix", "metakey": "prefix"},
+                {"newkey": "_{{in_field}}_asn", "metakey": "asn"}
+            ]
+        },
+        {
+            "module": "AddFieldProc",
+            "field_name": "test",
+            "value": "added..."
+        },
+        {
+            "module": "LogProc",
+            "level": "info"
+        }
+    ],
+    "out": {
+        "module": "FileJSONOutput",
+        "rotate_seconds": 60,
+        "folder": "/tmp",
+        "file_name_format": "gopipe-20060102-150405.json"
+    }
+}
