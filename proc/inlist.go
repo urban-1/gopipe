@@ -166,12 +166,15 @@ func (p *InListProc) loadList() {
     log.Warn("INLIST: Reading file")
     reader := bufio.NewReader(f)
 
-    count := 1
+    count := 0
 
     p.List = map[string]bool{}
 
     line, _, err := reader.ReadLine()
     for err != io.EOF {
+        if string(line) == "" {
+            continue
+        }
         p.List[string(line)] = true
         count += 1
         line, _, err = reader.ReadLine()
