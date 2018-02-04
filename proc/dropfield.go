@@ -29,6 +29,7 @@ func NewDropFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *DropFieldProc) Signal(string) {}
 
 func (p *DropFieldProc) Run() {
     log.Debug("DropFieldProc Starting ... ")

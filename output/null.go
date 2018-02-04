@@ -27,6 +27,8 @@ func NewNullOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config)
     return m
 }
 
+func  (p *NullOutput) Signal(string) {}
+
 func (p *NullOutput) Run() {
     p.MustStop = false
     log.Debug("NullOutput Starting ... ")

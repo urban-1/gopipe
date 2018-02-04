@@ -70,7 +70,7 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
     fpath, ok := cfg["filepath"].(string)
     if !ok {
-        panic("LPM 'filepath' missing")
+        panic("LPMProc: no valid filepath supplied. This is required...")
     }
 
     in_fields := []string{}
@@ -98,14 +98,26 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 }
 
 
+func  (p *LPMProc) Signal(signal string) {
+    log.Infof("LPMProc Received signal'%s'", signal)
+    switch signal {
+    case "reload":
+        p.loadTree()
+    default:
+        log.Infof("LPMProc UNKNOW signal '%s'", signal)
+    }
+}
+
 func (p *LPMProc) Run() {
     log.Debug("LPMProc Starting ... ")
 
     // Spawn the loader
-    go func(p *LPMProc) {
-        p.loadTree()
-        time.Sleep(time.Duration(p.ReloadMinutes)*time.Minute)
-    }(p)
+    if p.ReloadMinutes > 0 {
+        go func(p *LPMProc) {
+            p.loadTree()
+            time.Sleep(time.Duration(p.ReloadMinutes)*time.Minute)
+        }(p)
+    }
 
     p.MustStop = false
     cfg_error := false

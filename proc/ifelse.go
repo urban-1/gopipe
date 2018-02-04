@@ -45,6 +45,8 @@ func NewIfProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *IfProc) Signal(string) {}
+
 // The if module modifies the BoolStack of an event. This is used to flag skips
 func (p *IfProc) Run() {
     log.Debug("IfProc Starting ... ")
@@ -89,6 +91,8 @@ func NewElseProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *ElseProc) Signal(string) {}
+
 // The else module reverse the effect of the if module!
 func (p *ElseProc) Run() {
     log.Debug("ElseProc Starting ... ")
@@ -124,6 +128,8 @@ func NewEndIfProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     m.Tag = "PROC-ENDIF"
     return m
 }
+
+func  (p *EndIfProc) Signal(string) {}
 
 // The endif module just removes the current state from the ShouldRun stack
 func (p *EndIfProc) Run() {

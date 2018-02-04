@@ -55,6 +55,7 @@ func NewTCPJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
+func  (p *TCPJSONInput) Signal(string) {}
 
 func (p *TCPJSONInput) Run() {
     pstr := strconv.FormatInt(int64(p.port), 10)

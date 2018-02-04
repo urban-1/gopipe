@@ -40,6 +40,8 @@ func NewCastProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *CastProc) Signal(string) {}
+
 func (p *CastProc) Run() {
 
     p.MustStop = false

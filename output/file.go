@@ -69,6 +69,7 @@ func NewFileJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component 
     return m
 }
 
+func  (p *FileJSONOutput) Signal(string) {}
 
 // Check and rotate the output file if needed
 func (p *FileJSONOutput) checkRotate() {

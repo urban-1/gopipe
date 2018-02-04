@@ -35,6 +35,7 @@ func NewRegexProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *RegexProc) Signal(string) {}
 
 func (p *RegexProc) Run() {
     log.Debug("RegexProc Starting ... ")

@@ -63,7 +63,7 @@ func instanceFromConfig(cfg core.Config, ch1 chan *core.Event, ch2 chan *core.Ev
 
 // Loop for ever while sleeping for interval_seconds in every iteration
 // and execut a command (discarding output)
-func runTask(name string, parts []string, interval_seconds uint64) {
+func runTask(name string, parts []string, interval_seconds uint64, signals []interface{}) {
     cmd, args := parts[0], parts[1:]
     for {
     	if err := exec.Command(cmd, args...).Run(); err != nil {
@@ -71,6 +71,14 @@ func runTask(name string, parts []string, interval_seconds uint64) {
             return
     	}
     	log.Debug("Command '"+name+"' run successfully...")
+
+        // Signal other components
+        for _, signal := range signals {
+            mod := int(signal.(core.Config)["mod"].(float64))
+            sig := signal.(core.Config)["signal"].(string)
+            log.Infof("Invoking signal '%s' on component %d", sig, mod)
+            mods[mod].Signal(sig)
+        }
         time.Sleep(time.Duration(interval_seconds)*time.Second)
     }
 }
@@ -214,8 +222,6 @@ func main() {
         log.Info("Created ", len(chans), " channels")
 
         // Start the HTTP server
-
-
         tmpport, ok :=  CFG["main"].(core.Config)["apiport"].(float64)
         var apiport string
         if !ok {
@@ -242,7 +248,8 @@ func main() {
             go runTask(
                 task.(core.Config)["name"].(string),
                 core.InterfaceToStringArray(task.(core.Config)["command"].([]interface{})),
-                uint64(task.(core.Config)["interval_seconds"].(float64)))
+                uint64(task.(core.Config)["interval_seconds"].(float64)),
+                task.(core.Config)["signals"].([]interface {}))
         }
 
         // Start all

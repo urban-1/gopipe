@@ -109,7 +109,7 @@ Will replicate and optionally sample UDP packtes:
 }
 ```
 
-### Format log lines
+### Format log lines + if/else demo
 
 Receives lines over TCP, parses them into data fields, adds timestamp, converts
 some data to different data-types, discards the original message, hashes some
@@ -227,7 +227,8 @@ Receive on a TCP socket listening for JSON line:
 The following config part defines a task that runs every 10 seconds. Usually you
 would like to update file sources for `InListProc` and `LPMProc` components...
 In such cases the idea is that you have a small shell-script somewhere in your
-system and you call that (last action should be a `mv` to replace the file).
+system that will update your local files. Then you need to "invoke" a reload to
+load the new data in memory:
 
 ```
 ...
@@ -242,11 +243,28 @@ system and you call that (last action should be a `mv` to replace the file).
         {
             "name": "LSing...",
             "command": ["ls", "-al"],
-            "interval_seconds": 10
+            "interval_seconds": 10,
+            "signals": [
+                {"mod": 4, "signal": "reload"}
+            ]
+        },
+        {
+            "name": "LSing...2",
+            "command": ["ls", "-al"],
+            "interval_seconds": 10,
+            "signals": []
         }
     ]
 ...
 ```
+
+Above we define two tasks. The difference between them is that the first one
+will signal a component if it runs successfully. The signal `"reload"` is going
+to be sent to component `4` and is up to the component to handle it.
+
+The component index is defined as the order of this component in config
+**including input components**. Given that at the moment we only support one
+input, component `4` above is the 3rd in `proc` section.
 
 # Limitations
 

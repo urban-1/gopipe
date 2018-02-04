@@ -49,6 +49,7 @@ func NewUDPJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return &m
 }
 
+func  (p *UDPJSONOutput) Signal(string) {}
 
 func (p *UDPJSONOutput) Run() {
     pstr := strconv.FormatInt(int64(p.port), 10)

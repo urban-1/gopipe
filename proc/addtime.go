@@ -35,6 +35,7 @@ func NewAddTimeProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *AddTimeProc) Signal(string) {}
 
 func (p *AddTimeProc) Run() {
     log.Debug("AddTimeProc Starting ... ")

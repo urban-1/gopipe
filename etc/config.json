@@ -70,7 +70,16 @@
         {
             "name": "LSing...",
             "command": ["ls", "-al"],
-            "interval_seconds": 10
+            "interval_seconds": 10,
+            "signals": [
+                {"mod": 4, "signal": "reload"}
+            ]
+        },
+        {
+            "name": "LSing...2",
+            "command": ["ls", "-al"],
+            "interval_seconds": 10,
+            "signals": []
         }
     ]
 }

@@ -28,6 +28,7 @@ type Component interface {
     MustPrintStats()
     GetTag() string
     GetStatsJSON() map[string]interface{}
+    Signal(string)
 }
 
 // Each component's processing stats
@@ -47,6 +48,8 @@ func (c *ComponentStats) DebugStr() string {
     return fmt.Sprintf("rate=%-7d count=%d", c.MsgRate, c.MsgCount)
 
 }
+
+
 
 // Increments the MsgCount and if required, calculates the MsgRate. the default
 // interval is 3 seconds TODO: Global config

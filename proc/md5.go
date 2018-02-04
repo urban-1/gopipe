@@ -46,6 +46,7 @@ func NewMd5Proc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *Md5Proc) Signal(string) {}
 
 func (p *Md5Proc) Run() {
     log.Debug("Md5Proc Starting ... ")

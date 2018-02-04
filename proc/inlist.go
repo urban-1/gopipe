@@ -72,15 +72,29 @@ func NewInListProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
         cfg["out_field"].(string),
         int(cfg["reload_minutes"].(float64))}
 
-    m.Tag = "INLIST-LOG"
+    m.Tag = "PROC-INLIST"
     return m
+}
+
+func  (p *InListProc) Signal(signal string) {
+    log.Infof("InListProc Received signal'%s'", signal)
+    switch signal {
+    case "reload":
+        if p.FilePath == "" {
+            log.Error("InListProc IGNORING signal 'reload' - no filepath configured")
+            return
+        }
+        p.loadList()
+    default:
+        log.Infof("InListProc UNKNOW signal '%s'", signal)
+    }
 }
 
 func (p *InListProc) Run() {
     log.Debug("InListProc Starting ... ")
 
     // Spawn the loader
-    if p.List == nil {
+    if (p.List == nil) && (p.ReloadMinutes > 0) {
         go func(p *InListProc) {
             p.loadList()
             time.Sleep(time.Duration(p.ReloadMinutes)*time.Minute)

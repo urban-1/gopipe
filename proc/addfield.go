@@ -54,6 +54,8 @@ func NewAddFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
     return m
 }
 
+func  (p *AddFieldProc) Signal(string) {}
+
 // TODO: Add expression support if easy
 func (p *AddFieldProc) Run() {
     log.Debug("AddFieldProc Starting ... ")

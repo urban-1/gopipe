@@ -27,6 +27,7 @@ func NewSamplerProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config
     return m
 }
 
+func  (p *SamplerProc) Signal(string) {}
 
 func (p *SamplerProc) Run() {
     log.Debug("SamplerProc Starting ... ")
