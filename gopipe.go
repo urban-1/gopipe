@@ -68,7 +68,7 @@ func runTask(name string, parts []string, interval_seconds uint64, signals []int
     for {
     	if err := exec.Command(cmd, args...).Run(); err != nil {
             log.Error("Failed to run command '"+name+"': " + err.Error())
-            return
+            continue
     	}
     	log.Debug("Command '"+name+"' run successfully...")
 
