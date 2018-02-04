@@ -50,3 +50,13 @@ curl http://lg01.xxx.xxx/table.txt | awk -F' ' '{print $1,"{\"asn\": "$2"}"}' > 
 ```
 
 NOTE: **For concistency, the output fields will be populated ("") even if lookup fails**
+
+
+NOTE2:To disable the auto-reload use `"reload_minutes": 0` (or less). One can
+use `signal`s to reload this file.
+
+## Signals
+
+The supported signals are:
+
+-   `reload`: This will attempt to reload the tree from `filepath`.

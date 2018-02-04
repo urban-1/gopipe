@@ -24,7 +24,7 @@ Example static configuration:
 },
 ```
 
-Example with configuratio from file:
+Example with configuration from file:
 
 ```
 {
@@ -36,5 +36,15 @@ Example with configuratio from file:
 },
 ```
 
-NOTE: If both `filepath` and `list` are specified in the configuration, `filepath`
-takes priority and overwrites the `list`
+NOTE: If both `filepath` and `list` are specified in the configuration, `list`
+takes priority and overwrites the `filepath`
+
+NOTE2: When filepath is used, to disable the auto-reload use
+`"reload_minutes": 0` (or less). One can use `signal`s to reload this file.
+
+## Signals
+
+The supported signals are:
+
+-   `reload`: This will attempt to reload the list from `filepath`. If filepath
+    is not defined, it will print a warning and ignore the signal

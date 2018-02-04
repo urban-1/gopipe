@@ -94,11 +94,17 @@ func (p *InListProc) Run() {
     log.Debug("InListProc Starting ... ")
 
     // Spawn the loader
-    if (p.List == nil) && (p.ReloadMinutes > 0) {
-        go func(p *InListProc) {
+    if (p.List == nil) {
+        if (p.ReloadMinutes > 0) {
+            // Periodic reloading
+            go func(p *InListProc) {
+                p.loadList()
+                time.Sleep(time.Duration(p.ReloadMinutes)*time.Minute)
+            }(p)
+        } else {
+            // Once off loading...
             p.loadList()
-            time.Sleep(time.Duration(p.ReloadMinutes)*time.Minute)
-        }(p)
+        }
     }
 
     p.MustStop = false

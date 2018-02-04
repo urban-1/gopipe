@@ -113,10 +113,14 @@ func (p *LPMProc) Run() {
 
     // Spawn the loader
     if p.ReloadMinutes > 0 {
+        // Periodic reloading
         go func(p *LPMProc) {
             p.loadTree()
             time.Sleep(time.Duration(p.ReloadMinutes)*time.Minute)
         }(p)
+    } else {
+        // Once off
+        p.loadTree()
     }
 
     p.MustStop = false
