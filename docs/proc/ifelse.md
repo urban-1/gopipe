@@ -29,4 +29,4 @@ else it will append timestamp in the events' data. (I know it doesn't make sense
 but just an example...)
 
 NOTE: **In theory** if/else statements can be nested, however, this has not been
-tested :) you have been warned
+tested with more than 2 levels :) you have been warned
