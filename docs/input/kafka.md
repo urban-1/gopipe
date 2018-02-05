@@ -27,7 +27,7 @@ Example config:
 The `topic_conf` will be used for the topic default settings
 
 
-# `TCPCSVInput`, `TCPStrInput`, `TCPRawInput`
+# `KafkaCSVInput`, `KafkaStrInput`, `KafkaRawInput`
 
 As with the TCP/UDP equivalents, some extraparameters are needed in the config
 block of this component. However, **non of the above have been tested**
