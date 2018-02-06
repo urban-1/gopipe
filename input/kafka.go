@@ -88,8 +88,8 @@ func (p *KafkaJSONInput) Run() {
 
 		switch ke := ev.(type) {
 		case *kafka.Message:
-			fmt.Printf("%% Message on %s:\n%s\n",
-				ke.TopicPartition, string(ke.Value))
+			// fmt.Printf("%% Message on %s:\n%s\n",
+			// 	ke.TopicPartition, string(ke.Value))
 
             json_data, err := p.Decoder.FromBytes(ke.Value)
             if err != nil {
