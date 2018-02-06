@@ -52,7 +52,7 @@ func NewKafkaJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component 
     k, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":    cfg["brokers"].(string),
 		"group.id":             cfg["group"].(string),
-		"session.timeout.ms":   5000,
+		"session.timeout.ms":   300000,  // 5 mins
 		"default.topic.config": InterfaceToConfigMap(cfg["topic_conf"])})
 
 	if err != nil {
