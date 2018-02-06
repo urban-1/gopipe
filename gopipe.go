@@ -68,7 +68,8 @@ func runTask(name string, parts []string, interval_seconds uint64, signals []int
     for {
     	if err := exec.Command(cmd, args...).Run(); err != nil {
             log.Error("Failed to run command '"+name+"': " + err.Error())
-            return
+            time.Sleep(time.Duration(interval_seconds)*time.Second)
+            continue
     	}
     	log.Debug("Command '"+name+"' run successfully...")
 
@@ -134,7 +135,7 @@ func main() {
 
         DN , _ := os.Getwd()
         log.Info("Running from directory '", DN, "'")
-        log.Info("Loding configuration from '", c.String("config"), "'")
+        log.Info("Loading configuration from '", c.String("config"), "'")
         raw, err := ioutil.ReadFile(c.String("config"))
         if err != nil {
             log.Error(err.Error())

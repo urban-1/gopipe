@@ -99,7 +99,7 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
 
 func  (p *LPMProc) Signal(signal string) {
-    log.Infof("LPMProc Received signal'%s'", signal)
+    log.Infof("LPMProc Received signal '%s'", signal)
     switch signal {
     case "reload":
         p.loadTree()

@@ -48,6 +48,7 @@ hope we will extend as needed with the help of the community.
 
 -   **[TCP](docs/input/tcp.md)**: Supporting raw, string, CSV and JSON
 -   **[UDP](docs/input/udp.md)**: Supporting raw, string, CSV and JSON
+-   **[Kafka](docs/input/kafka.md)**: Supporting raw, string, CSV and JSON
 
 ### Processing
 

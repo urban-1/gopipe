@@ -64,6 +64,15 @@ func (p *IfProc) Run() {
         log.Debug("If expression evaluates to: ", result)
 
         // We now push the result to the stack:
+        // -  if we are in a false group, push false
+        if e.ShouldRun.Size() > 0 {
+            state, _ := e.ShouldRun.Top()
+            if !state {
+                // Override to true so we push a false at the end...
+                result = false
+            }
+        }
+
         //  - if the condition was true then ShouldRun=true
         //  - else ShouldRun=false
         e.ShouldRun.Push(result.(bool))
@@ -105,6 +114,14 @@ func (p *ElseProc) Run() {
         if err != nil {
             log.Error("User configuration error... Check your IF/ELSEs")
         }
+
+        // Check parent state, if false push false
+        if e.ShouldRun.Size() > 0 {
+            state, _ := e.ShouldRun.Top()
+            if !state {
+                result = true
+            }
+        }
         e.ShouldRun.Push(!result)
 
         p.OutQ<-e
@@ -139,6 +156,7 @@ func (p *EndIfProc) Run() {
         log.Debug("EndIfProc Reading")
         e := <- p.InQ
 
+        // In any case pop one out...
         _, _ = e.ShouldRun.Pop()
 
         p.OutQ<-e
