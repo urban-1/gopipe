@@ -102,7 +102,11 @@ func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 
     var record []string
     for _, h := range c.Headers {
-        record = append(record, fmt.Sprintf("%v", data[h]))
+        if data[h] == nil {
+            record = append(record, "")
+        } else {
+            record = append(record, fmt.Sprintf("%v", data[h]))
+        }
     }
     writer.Write(record)
     writer.Flush()
