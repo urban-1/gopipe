@@ -201,7 +201,11 @@ func (p *LPMProc) loadTree() {
         json_data := map[string]interface{}{}
         parts := bytes.Split(line, []byte(" "))
         meta := bytes.Join(parts[1:], []byte(""))
-        if json.Unmarshal(meta, &json_data) != nil {
+
+        d := json.NewDecoder(bytes.NewReader(meta))
+        d.UseNumber()
+
+        if d.Decode(&json_data) != nil {
             log.Error("LPM: Unable to parse prefix meta-data: ", string(meta))
         }
 

@@ -28,7 +28,9 @@ type JSONLineCodec struct {}
 
 func (*JSONLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
     var json_data map[string]interface{}
-    if err := json.Unmarshal(data, &json_data); err != nil {
+    d := json.NewDecoder(bytes.NewReader(data))
+    d.UseNumber()
+    if err := d.Decode(&json_data); err != nil {
         return nil, err
     }
     return json_data, nil
