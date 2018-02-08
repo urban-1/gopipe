@@ -42,12 +42,12 @@ import (
 
 	"github.com/asergeyev/nradix"
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering LPMProc")
-	GetRegistryInstance()["LPMProc"] = NewLPMProc
+	core.GetRegistryInstance()["LPMProc"] = NewLPMProc
 }
 
 type LPMOutField struct {
@@ -56,7 +56,7 @@ type LPMOutField struct {
 }
 
 type LPMProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	Tree          *nradix.Tree
 	TreeLock      *sync.Mutex
 	FilePath      string
@@ -65,7 +65,7 @@ type LPMProc struct {
 	OutFields     []LPMOutField
 }
 
-func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewLPMProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating LPMProc")
 
 	fpath, ok := cfg["filepath"].(string)
@@ -75,7 +75,7 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 
 	in_fields := []string{}
 	if tmp, ok := cfg["in_fields"].([]interface{}); ok {
-		in_fields = InterfaceToStringArray(tmp)
+		in_fields = core.InterfaceToStringArray(tmp)
 	}
 
 	out_fields := []LPMOutField{}
@@ -87,7 +87,7 @@ func NewLPMProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 			LPMOutField{v2["newkey"].(string), v2["metakey"].(string)})
 	}
 
-	m := &LPMProc{NewComponentBase(inQ, outQ, cfg),
+	m := &LPMProc{core.NewComponentBase(inQ, outQ, cfg),
 		nradix.NewTree(100), &sync.Mutex{}, fpath,
 		int(cfg["reload_minutes"].(float64)),
 		in_fields, out_fields}

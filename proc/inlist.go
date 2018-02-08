@@ -19,16 +19,16 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering InListProc")
-	GetRegistryInstance()["InListProc"] = NewInListProc
+	core.GetRegistryInstance()["InListProc"] = NewInListProc
 }
 
 type InListProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	List          map[string]bool
 	ListLock      *sync.Mutex
 	FilePath      string
@@ -37,7 +37,7 @@ type InListProc struct {
 	ReloadMinutes int
 }
 
-func NewInListProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewInListProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating InListProc")
 
 	// Set this modules log level
@@ -73,7 +73,7 @@ func NewInListProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 		reload = int(r)
 	}
 
-	m := &InListProc{NewComponentBase(inQ, outQ, cfg),
+	m := &InListProc{core.NewComponentBase(inQ, outQ, cfg),
 		list, &sync.Mutex{}, fpath,
 		cfg["in_field"].(string),
 		cfg["out_field"].(string),

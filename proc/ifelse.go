@@ -7,26 +7,26 @@ package proc
 import (
 	"github.com/Knetic/govaluate"
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering IfProc")
-	GetRegistryInstance()["if"] = NewIfProc
+	core.GetRegistryInstance()["if"] = NewIfProc
 
 	log.Info("Registering ElseProc")
-	GetRegistryInstance()["else"] = NewElseProc
+	core.GetRegistryInstance()["else"] = NewElseProc
 
 	log.Info("Registering EndIfProc")
-	GetRegistryInstance()["endif"] = NewEndIfProc
+	core.GetRegistryInstance()["endif"] = NewEndIfProc
 }
 
 type IfProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	Expr *govaluate.EvaluableExpression
 }
 
-func NewIfProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewIfProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating IfProc")
 
 	// Set this modules log level
@@ -40,7 +40,7 @@ func NewIfProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 		panic("If module failed to evaluate condition")
 	}
 
-	m := &IfProc{NewComponentBase(inQ, outQ, cfg), expression}
+	m := &IfProc{core.NewComponentBase(inQ, outQ, cfg), expression}
 	m.Tag = "PROC-IF"
 	return m
 }
@@ -89,12 +89,12 @@ func (p *IfProc) Run() {
 }
 
 type ElseProc struct {
-	*ComponentBase
+	*core.ComponentBase
 }
 
-func NewElseProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewElseProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating ElseProc")
-	m := &ElseProc{NewComponentBase(inQ, outQ, cfg)}
+	m := &ElseProc{core.NewComponentBase(inQ, outQ, cfg)}
 	m.Tag = "PROC-ELSE"
 	return m
 }
@@ -135,12 +135,12 @@ func (p *ElseProc) Run() {
 }
 
 type EndIfProc struct {
-	*ComponentBase
+	*core.ComponentBase
 }
 
-func NewEndIfProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewEndIfProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating EndIfProc")
-	m := &EndIfProc{NewComponentBase(inQ, outQ, cfg)}
+	m := &EndIfProc{core.NewComponentBase(inQ, outQ, cfg)}
 	m.Tag = "PROC-ENDIF"
 	return m
 }

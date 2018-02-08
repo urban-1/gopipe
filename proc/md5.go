@@ -9,32 +9,32 @@ import (
 	"encoding/hex"
 
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering Md5Proc")
-	GetRegistryInstance()["Md5Proc"] = NewMd5Proc
+	core.GetRegistryInstance()["Md5Proc"] = NewMd5Proc
 }
 
 type Md5Proc struct {
-	*ComponentBase
+	*core.ComponentBase
 	InFields  []string
 	OutFields []string
 	Salt      string
 }
 
-func NewMd5Proc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewMd5Proc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating Md5Proc")
 
 	in_fields := []string{}
 	if tmp, ok := cfg["in_fields"].([]interface{}); ok {
-		in_fields = InterfaceToStringArray(tmp)
+		in_fields = core.InterfaceToStringArray(tmp)
 	}
 
 	out_fields := []string{}
 	if tmp, ok := cfg["out_fields"].([]interface{}); ok {
-		out_fields = InterfaceToStringArray(tmp)
+		out_fields = core.InterfaceToStringArray(tmp)
 	}
 
 	salt, ok := cfg["salt"].(string)
@@ -42,7 +42,7 @@ func NewMd5Proc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 		salt = ""
 	}
 
-	m := &Md5Proc{NewComponentBase(inQ, outQ, cfg), in_fields, out_fields, salt}
+	m := &Md5Proc{core.NewComponentBase(inQ, outQ, cfg), in_fields, out_fields, salt}
 	m.Tag = "MD5-LOG"
 	return m
 }

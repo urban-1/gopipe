@@ -10,37 +10,37 @@ import (
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering UDPJSONOutput")
-	GetRegistryInstance()["UDPJSONOutput"] = NewUDPJSONOutput
+	core.GetRegistryInstance()["UDPJSONOutput"] = NewUDPJSONOutput
 
 	log.Info("Registering UDPCSVOutput")
-	GetRegistryInstance()["UDPCSVOutput"] = NewUDPStrOutput
+	core.GetRegistryInstance()["UDPCSVOutput"] = NewUDPStrOutput
 
 	log.Info("Registering UDPRawOutput")
-	GetRegistryInstance()["UDPRawOutput"] = NewUDPRawOutput
+	core.GetRegistryInstance()["UDPRawOutput"] = NewUDPRawOutput
 
 	log.Info("Registering UDPStrOutput")
-	GetRegistryInstance()["UDPStrOutput"] = NewUDPStrOutput
+	core.GetRegistryInstance()["UDPStrOutput"] = NewUDPStrOutput
 }
 
 // The base structure for common UDP Ops
 type UDPJSONOutput struct {
-	*ComponentBase
+	*core.ComponentBase
 	// Keep a referece to the struct responsible for decoding...
-	Encoder LineCodec
+	Encoder core.LineCodec
 	target  string
 	port    uint32
 	Sock    net.Conn
 }
 
-func NewUDPJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewUDPJSONOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating UDPJSONOutput")
-	m := UDPJSONOutput{NewComponentBase(inQ, outQ, cfg),
-		&JSONLineCodec{},
+	m := UDPJSONOutput{core.NewComponentBase(inQ, outQ, cfg),
+		&core.JSONLineCodec{},
 		cfg["target"].(string), uint32(cfg["port"].(float64)), nil}
 
 	m.Tag = "OUT-UDP-JSON"
@@ -96,7 +96,7 @@ type UDPCSVOutput struct {
 	*UDPJSONOutput
 }
 
-func NewUDPCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewUDPCSVOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating UDPCSVOutput")
 
 	// Defaults...
@@ -105,7 +105,7 @@ func NewUDPCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "OUT-UDP-CSV"
 
 	// Change to CSV
-	c := &CSVLineCodec{nil, ","[0], true}
+	c := &core.CSVLineCodec{nil, ","[0], true}
 	cfgbytes, _ := json.Marshal(cfg)
 	json.Unmarshal(cfgbytes, c)
 	m.Encoder = c
@@ -118,7 +118,7 @@ type UDPRawOutput struct {
 	*UDPJSONOutput
 }
 
-func NewUDPRawOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewUDPRawOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating UDPRawOutput")
 
 	// Defaults...
@@ -127,7 +127,7 @@ func NewUDPRawOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "OUT-UDP-RAW"
 
 	// Change to CSV
-	m.Encoder = &RawLineCodec{}
+	m.Encoder = &core.RawLineCodec{}
 
 	return &m
 }
@@ -137,7 +137,7 @@ type UDPStrOutput struct {
 	*UDPJSONOutput
 }
 
-func NewUDPStrOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewUDPStrOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating UDPStrOutput")
 
 	// Defaults...
@@ -146,7 +146,7 @@ func NewUDPStrOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "OUT-UDP-STR"
 
 	// Change to CSV
-	m.Encoder = &StringLineCodec{}
+	m.Encoder = &core.StringLineCodec{}
 
 	return &m
 }

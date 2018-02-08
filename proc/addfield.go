@@ -12,22 +12,22 @@ package proc
 import (
 	"github.com/Knetic/govaluate"
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering AddFieldProc")
-	GetRegistryInstance()["AddFieldProc"] = NewAddFieldProc
+	core.GetRegistryInstance()["AddFieldProc"] = NewAddFieldProc
 }
 
 type AddFieldProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	FieldName string
 	Value     interface{}
 	Expr      *govaluate.EvaluableExpression
 }
 
-func NewAddFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewAddFieldProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating AddFieldProc")
 	field_name, ok := cfg["field_name"].(string)
 	if !ok {
@@ -49,7 +49,7 @@ func NewAddFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 		value = nil
 	}
 
-	m := &AddFieldProc{NewComponentBase(inQ, outQ, cfg), field_name, value, expression}
+	m := &AddFieldProc{core.NewComponentBase(inQ, outQ, cfg), field_name, value, expression}
 	m.Tag = "PROC-ADDFIELD"
 	return m
 }

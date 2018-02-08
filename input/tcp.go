@@ -15,39 +15,38 @@ import (
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
-
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering TCPJSONInput")
-	GetRegistryInstance()["TCPJSONInput"] = NewTCPJSONInput
+	core.GetRegistryInstance()["TCPJSONInput"] = NewTCPJSONInput
 
 	log.Info("Registering TCPCSVInput")
-	GetRegistryInstance()["TCPCSVInput"] = NewTCPCSVInput
+	core.GetRegistryInstance()["TCPCSVInput"] = NewTCPCSVInput
 
 	log.Info("Registering TCPStrInput")
-	GetRegistryInstance()["TCPStrInput"] = NewTCPStrInput
+	core.GetRegistryInstance()["TCPStrInput"] = NewTCPStrInput
 
 	log.Info("Registering TCPRawInput")
-	GetRegistryInstance()["TCPRawInput"] = NewTCPRawInput
+	core.GetRegistryInstance()["TCPRawInput"] = NewTCPRawInput
 }
 
 // The base structure for common TCP Ops. The default implementation is using
 // JSON message format
 type TCPJSONInput struct {
-	*ComponentBase
+	*core.ComponentBase
 	// Keep a referece to the struct responsible for decoding...
-	Decoder LineCodec
+	Decoder core.LineCodec
 	host    string
 	port    uint32
 	Sock    net.Listener
 }
 
-func NewTCPJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewTCPJSONInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating TCPJSONInput")
-	m := TCPJSONInput{NewComponentBase(inQ, outQ, cfg),
-		&JSONLineCodec{},
+	m := TCPJSONInput{core.NewComponentBase(inQ, outQ, cfg),
+		&core.JSONLineCodec{},
 		cfg["listen"].(string), uint32(cfg["port"].(float64)), nil}
 
 	m.Tag = "IN-TCP-JSON"
@@ -128,7 +127,7 @@ func (p *TCPJSONInput) handleRequest(conn net.Conn) {
 			continue
 		}
 
-		e := NewEvent(json_data)
+		e := core.NewEvent(json_data)
 		json_data["_from_addr"], json_data["_from_port"], _ = net.SplitHostPort(conn.RemoteAddr().String())
 		p.OutQ <- e
 
@@ -146,7 +145,7 @@ type TCPCSVInput struct {
 	*TCPJSONInput
 }
 
-func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewTCPCSVInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating TCPCSVInput")
 
 	// Defaults...
@@ -155,7 +154,7 @@ func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "IN-TCP-CSV"
 
 	// Change to CSV
-	c := &CSVLineCodec{nil, ","[0], true}
+	c := &core.CSVLineCodec{nil, ","[0], true}
 	cfgbytes, _ := json.Marshal(cfg)
 	json.Unmarshal(cfgbytes, c)
 	m.Decoder = c
@@ -168,7 +167,7 @@ type TCPRawInput struct {
 	*TCPJSONInput
 }
 
-func NewTCPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewTCPRawInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating TCPRawInput")
 
 	// Defaults...
@@ -177,7 +176,7 @@ func NewTCPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "IN-TCP-RAW"
 
 	// Change to CSV
-	m.Decoder = &RawLineCodec{}
+	m.Decoder = &core.RawLineCodec{}
 
 	return &m
 }
@@ -187,7 +186,7 @@ type TCPStrInput struct {
 	*TCPJSONInput
 }
 
-func NewTCPStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewTCPStrInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating TCPStrInput")
 
 	// Defaults...
@@ -196,7 +195,7 @@ func NewTCPStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "IN-TCP-STR"
 
 	// Change to CSV
-	m.Decoder = &StringLineCodec{}
+	m.Decoder = &core.StringLineCodec{}
 
 	return &m
 }

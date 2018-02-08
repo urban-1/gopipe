@@ -8,34 +8,34 @@ import (
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering CastProc")
-	GetRegistryInstance()["CastProc"] = NewCastProc
+	core.GetRegistryInstance()["CastProc"] = NewCastProc
 }
 
 type CastProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	Fields []string
 	Types  []string
 }
 
-func NewCastProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewCastProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating CastProc")
 
 	fields := []string{}
 	if tmp, ok := cfg["fields"].([]interface{}); ok {
-		fields = InterfaceToStringArray(tmp)
+		fields = core.InterfaceToStringArray(tmp)
 	}
 
 	types := []string{}
 	if tmp, ok := cfg["types"].([]interface{}); ok {
-		types = InterfaceToStringArray(tmp)
+		types = core.InterfaceToStringArray(tmp)
 	}
 
-	m := &CastProc{NewComponentBase(inQ, outQ, cfg), fields, types}
+	m := &CastProc{core.NewComponentBase(inQ, outQ, cfg), fields, types}
 	m.Tag = "CAST-LOG"
 	return m
 }

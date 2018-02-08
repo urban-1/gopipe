@@ -11,28 +11,28 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering KafkaJSONInput")
-	GetRegistryInstance()["KafkaJSONInput"] = NewKafkaJSONInput
+	core.GetRegistryInstance()["KafkaJSONInput"] = NewKafkaJSONInput
 
 	log.Info("Registering KafkaCSVInput")
-	GetRegistryInstance()["KafkaCSVInput"] = NewKafkaCSVInput
+	core.GetRegistryInstance()["KafkaCSVInput"] = NewKafkaCSVInput
 
 	log.Info("Registering KafkaRawInput")
-	GetRegistryInstance()["KafkaRawInput"] = NewKafkaRawInput
+	core.GetRegistryInstance()["KafkaRawInput"] = NewKafkaRawInput
 
 	log.Info("Registering KafkaStrInput")
-	GetRegistryInstance()["KafkaStrInput"] = NewKafkaStrInput
+	core.GetRegistryInstance()["KafkaStrInput"] = NewKafkaStrInput
 }
 
 // The base structure for common UDP Ops
 type KafkaJSONInput struct {
-	*ComponentBase
+	*core.ComponentBase
 	// Keep a referece to the struct responsible for decoding...
-	Decoder LineCodec
+	Decoder core.LineCodec
 	Kafka   *kafka.Consumer
 }
 
@@ -44,7 +44,7 @@ func InterfaceToConfigMap(cfg interface{}) kafka.ConfigMap {
 	return kafkaConfig
 }
 
-func NewKafkaJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewKafkaJSONInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating KafkaJSONInput")
 
 	k, err := kafka.NewConsumer(&kafka.ConfigMap{
@@ -57,12 +57,12 @@ func NewKafkaJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component 
 		panic(fmt.Sprintf("Failed to create consumer: %s\n", err))
 	}
 
-	m := KafkaJSONInput{NewComponentBase(inQ, outQ, cfg),
-		&JSONLineCodec{}, k}
+	m := KafkaJSONInput{core.NewComponentBase(inQ, outQ, cfg),
+		&core.JSONLineCodec{}, k}
 
 	log.Infof("Created Consumer %v\n", m.Kafka)
 
-	topics := InterfaceToStringArray(cfg["topics"].([]interface{}))
+	topics := core.InterfaceToStringArray(cfg["topics"].([]interface{}))
 	err = m.Kafka.SubscribeTopics(topics, nil)
 
 	m.Tag = "IN-KAFKA-JSON"
@@ -95,7 +95,7 @@ func (p *KafkaJSONInput) Run() {
 				continue
 			}
 
-			e := NewEvent(json_data)
+			e := core.NewEvent(json_data)
 			p.OutQ <- e
 
 			// Stats
@@ -120,7 +120,7 @@ type KafkaCSVInput struct {
 	*KafkaJSONInput
 }
 
-func NewKafkaCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewKafkaCSVInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating KafkaCSVInput")
 
 	// Defaults...
@@ -129,7 +129,7 @@ func NewKafkaCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "IN-KAFKA-CSV"
 
 	// Change to CSV
-	c := &CSVLineCodec{nil, ","[0], true}
+	c := &core.CSVLineCodec{nil, ","[0], true}
 	cfgbytes, _ := json.Marshal(cfg)
 	json.Unmarshal(cfgbytes, c)
 	log.Error(c)
@@ -143,7 +143,7 @@ type KafkaRawInput struct {
 	*KafkaJSONInput
 }
 
-func NewKafkaRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewKafkaRawInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating KafkaRawInput")
 
 	// Defaults...
@@ -152,7 +152,7 @@ func NewKafkaRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "IN-KAFKA-RAW"
 
 	// Change to CSV
-	m.Decoder = &RawLineCodec{}
+	m.Decoder = &core.RawLineCodec{}
 
 	return &m
 }
@@ -162,7 +162,7 @@ type KafkaStrInput struct {
 	*KafkaJSONInput
 }
 
-func NewKafkaStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewKafkaStrInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating KafkaStrInput")
 
 	// Defaults...
@@ -171,7 +171,7 @@ func NewKafkaStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "IN-KAFKA-STR"
 
 	// Change to CSV
-	m.Decoder = &StringLineCodec{}
+	m.Decoder = &core.StringLineCodec{}
 
 	return &m
 }

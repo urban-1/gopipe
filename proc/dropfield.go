@@ -5,26 +5,26 @@ package proc
 
 import (
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering DropFieldProc")
-	GetRegistryInstance()["DropFieldProc"] = NewDropFieldProc
+	core.GetRegistryInstance()["DropFieldProc"] = NewDropFieldProc
 }
 
 type DropFieldProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	FieldName string
 }
 
-func NewDropFieldProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewDropFieldProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating DropFieldProc")
 	field_name, ok := cfg["field_name"].(string)
 	if !ok {
 		field_name = "timestamp"
 	}
-	m := &DropFieldProc{NewComponentBase(inQ, outQ, cfg), field_name}
+	m := &DropFieldProc{core.NewComponentBase(inQ, outQ, cfg), field_name}
 	m.Tag = "PROC-DROPFIELD"
 	return m
 }

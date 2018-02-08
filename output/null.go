@@ -5,43 +5,43 @@
 package output
 
 import (
-    "github.com/urban-1/gopipe/core"
-    log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
-    log.Info("Registering NullOutput")
-    core.GetRegistryInstance()["NullOutput"] = NewNullOutput
+	log.Info("Registering NullOutput")
+	core.GetRegistryInstance()["NullOutput"] = NewNullOutput
 }
 
 type NullOutput struct {
-    core.ComponentBase
+	core.ComponentBase
 }
 
 func NewNullOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
-    log.Info("Creating NullOutput")
-    m := &NullOutput{*core.NewComponentBase(inQ, outQ, cfg)}
+	log.Info("Creating NullOutput")
+	m := &NullOutput{*core.NewComponentBase(inQ, outQ, cfg)}
 
-    m.Tag = "OUT-NULL"
+	m.Tag = "OUT-NULL"
 
-    return m
+	return m
 }
 
-func  (p *NullOutput) Signal(string) {}
+func (p *NullOutput) Signal(string) {}
 
 func (p *NullOutput) Run() {
-    p.MustStop = false
-    log.Debug("NullOutput Starting ... ")
-    for !p.MustStop {
-        log.Debug("NullOutput Reading")
-        _, err := p.ShouldRun()
-        if err != nil {
-            continue
-        }
+	p.MustStop = false
+	log.Debug("NullOutput Starting ... ")
+	for !p.MustStop {
+		log.Debug("NullOutput Reading")
+		_, err := p.ShouldRun()
+		if err != nil {
+			continue
+		}
 
-        // Stats
-        p.StatsAddMesg()
-        p.PrintStats()
-    }
-    log.Debug("NullOutput Stopping")
+		// Stats
+		p.StatsAddMesg()
+		p.PrintStats()
+	}
+	log.Debug("NullOutput Stopping")
 }

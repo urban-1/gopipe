@@ -22,28 +22,28 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering FileJSONOutput")
-	GetRegistryInstance()["FileJSONOutput"] = NewFileJSONOutput
+	core.GetRegistryInstance()["FileJSONOutput"] = NewFileJSONOutput
 
 	log.Info("Registering FileCSVOutput")
-	GetRegistryInstance()["FileCSVOutput"] = NewFileCSVOutput
+	core.GetRegistryInstance()["FileCSVOutput"] = NewFileCSVOutput
 }
 
 type FileJSONOutput struct {
-	*ComponentBase
+	*core.ComponentBase
 	LastRotate    int64
 	Folder        string
 	Pattern       string
 	RotateSeconds int
 	Fd            *os.File
-	Encoder       LineCodec
+	Encoder       core.LineCodec
 }
 
-func NewFileJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewFileJSONOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating FileJSONOutput")
 
 	folder := "/tmp"
@@ -61,9 +61,9 @@ func NewFileJSONOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component 
 		rotate_seconds = int(tmp)
 	}
 
-	m := &FileJSONOutput{NewComponentBase(inQ, outQ, cfg),
+	m := &FileJSONOutput{core.NewComponentBase(inQ, outQ, cfg),
 		0, folder, pattern, rotate_seconds, nil,
-		&JSONLineCodec{}}
+		&core.JSONLineCodec{}}
 
 	m.Tag = "OUT-FILE-JSON"
 
@@ -149,7 +149,7 @@ type FileCSVOutput struct {
 	*FileJSONOutput
 }
 
-func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewFileCSVOutput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating FileCSVOutput")
 
 	m := FileCSVOutput{NewFileJSONOutput(inQ, outQ, cfg).(*FileJSONOutput)}
@@ -157,7 +157,7 @@ func NewFileCSVOutput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
 	m.Tag = "OUT-FILE-CSV"
 
 	// Change to CSV
-	c := &CSVLineCodec{nil, ","[0], true}
+	c := &core.CSVLineCodec{nil, ","[0], true}
 	cfgbytes, _ := json.Marshal(cfg)
 	json.Unmarshal(cfgbytes, c)
 	m.Encoder = c

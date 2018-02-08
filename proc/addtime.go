@@ -11,26 +11,26 @@ package proc
 
 import (
 	log "github.com/sirupsen/logrus"
-	. "github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
 	log.Info("Registering AddTimeProc")
-	GetRegistryInstance()["AddTimeProc"] = NewAddTimeProc
+	core.GetRegistryInstance()["AddTimeProc"] = NewAddTimeProc
 }
 
 type AddTimeProc struct {
-	*ComponentBase
+	*core.ComponentBase
 	FieldName string
 }
 
-func NewAddTimeProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
+func NewAddTimeProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
 	log.Info("Creating AddTimeProc")
 	field_name, ok := cfg["field_name"].(string)
 	if !ok {
 		field_name = "timestamp"
 	}
-	m := &AddTimeProc{NewComponentBase(inQ, outQ, cfg), field_name}
+	m := &AddTimeProc{core.NewComponentBase(inQ, outQ, cfg), field_name}
 	m.Tag = "PROC-ADDTIME"
 	return m
 }
