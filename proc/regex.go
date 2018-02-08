@@ -6,83 +6,84 @@
 package proc
 
 import (
-    "regexp"
-    . "gopipe/core"
-    log "github.com/sirupsen/logrus"
+	"regexp"
+
+	log "github.com/sirupsen/logrus"
+	. "github.com/urban-1/gopipe/core"
 )
 
 func init() {
-    log.Info("Registering RegexProc")
-    GetRegistryInstance()["RegexProc"] = NewRegexProc
+	log.Info("Registering RegexProc")
+	GetRegistryInstance()["RegexProc"] = NewRegexProc
 }
 
 type RegexProc struct {
-    *ComponentBase
-    Regs []*regexp.Regexp
+	*ComponentBase
+	Regs []*regexp.Regexp
 }
 
 func NewRegexProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
-    log.Info("Creating RegexProc")
+	log.Info("Creating RegexProc")
 
-    regs := []*regexp.Regexp{}
-    tmpres := cfg["regexes"].([]interface{})
+	regs := []*regexp.Regexp{}
+	tmpres := cfg["regexes"].([]interface{})
 
-    for _, v := range tmpres {
-        regs = append(regs, regexp.MustCompile(v.(string)))
-    }
-    m := &RegexProc{NewComponentBase(inQ, outQ, cfg), regs}
-    m.Tag = "REGEX-PROC"
-    return m
+	for _, v := range tmpres {
+		regs = append(regs, regexp.MustCompile(v.(string)))
+	}
+	m := &RegexProc{NewComponentBase(inQ, outQ, cfg), regs}
+	m.Tag = "REGEX-PROC"
+	return m
 }
 
-func  (p *RegexProc) Signal(string) {}
+func (p *RegexProc) Signal(string) {}
 
 func (p *RegexProc) Run() {
-    log.Debug("RegexProc Starting ... ")
-    p.MustStop = false
-    for !p.MustStop {
+	log.Debug("RegexProc Starting ... ")
+	p.MustStop = false
+	for !p.MustStop {
 
-        e, err := p.ShouldRun()
-        if err != nil {
-            continue
-        }
+		e, err := p.ShouldRun()
+		if err != nil {
+			continue
+		}
 
-        allok := false
+		allok := false
 
-        for renum, re := range p.Regs {
+		for renum, re := range p.Regs {
 
-            log.Debug("Testing renum=", renum)
-            match  := re.FindStringSubmatch(e.Data["message"].(string))
-            if match == nil {
-                continue
-            }
+			log.Debug("Testing renum=", renum)
+			match := re.FindStringSubmatch(e.Data["message"].(string))
+			if match == nil {
+				continue
+			}
 
-            log.Debug("Matched! renum=", renum)
+			log.Debug("Matched! renum=", renum)
 
-            // Mark processed
-            allok = true
+			// Mark processed
+			allok = true
 
-            for i, name := range re.SubexpNames() {
+			for i, name := range re.SubexpNames() {
 
-                if i != 0 {
-                    e.Data[name] = match[i]
-                }
-            }
-            break
-        }
+				if i != 0 {
+					e.Data[name] = match[i]
+				}
+			}
+			break
+		}
 
-        if !allok {
-            log.Warn("Skipping non-mathching line: ", e.Data["message"].(string))
-            continue
-        }
+		if !allok {
+			log.Warn("Skipping non-mathching line: ", e.Data["message"].(string))
+			continue
+		}
 
-        p.OutQ<-e
+		p.OutQ <- e
 
-        // Stats
-        p.StatsAddMesg()
-        p.PrintStats()
+		// Stats
+		p.StatsAddMesg()
+		p.PrintStats()
 
-    }
+	}
 
-    log.Info("RegexProc Stopping!?")
+	log.Info("RegexProc Stopping!?")
 }

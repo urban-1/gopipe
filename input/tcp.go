@@ -7,83 +7,83 @@
 package input
 
 import (
-    "os"
-    "io"
-    "net"
-    "bufio"
-    "strconv"
-    "encoding/json"
-    log "github.com/sirupsen/logrus"
+	"bufio"
+	"encoding/json"
+	"io"
+	"net"
+	"os"
+	"strconv"
 
-    . "gopipe/core"
+	log "github.com/sirupsen/logrus"
+
+	. "github.com/urban-1/gopipe/core"
 )
 
 func init() {
-    log.Info("Registering TCPJSONInput")
-    GetRegistryInstance()["TCPJSONInput"] = NewTCPJSONInput
+	log.Info("Registering TCPJSONInput")
+	GetRegistryInstance()["TCPJSONInput"] = NewTCPJSONInput
 
-    log.Info("Registering TCPCSVInput")
-    GetRegistryInstance()["TCPCSVInput"] = NewTCPCSVInput
+	log.Info("Registering TCPCSVInput")
+	GetRegistryInstance()["TCPCSVInput"] = NewTCPCSVInput
 
-    log.Info("Registering TCPStrInput")
-    GetRegistryInstance()["TCPStrInput"] = NewTCPStrInput
+	log.Info("Registering TCPStrInput")
+	GetRegistryInstance()["TCPStrInput"] = NewTCPStrInput
 
-    log.Info("Registering TCPRawInput")
-    GetRegistryInstance()["TCPRawInput"] = NewTCPRawInput
+	log.Info("Registering TCPRawInput")
+	GetRegistryInstance()["TCPRawInput"] = NewTCPRawInput
 }
 
 // The base structure for common TCP Ops. The default implementation is using
 // JSON message format
 type TCPJSONInput struct {
-    *ComponentBase
-    // Keep a referece to the struct responsible for decoding...
-    Decoder LineCodec
-    host string
-    port uint32
-    Sock net.Listener
+	*ComponentBase
+	// Keep a referece to the struct responsible for decoding...
+	Decoder LineCodec
+	host    string
+	port    uint32
+	Sock    net.Listener
 }
-
 
 func NewTCPJSONInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
-    log.Info("Creating TCPJSONInput")
-    m := TCPJSONInput{NewComponentBase(inQ, outQ, cfg),
-        &JSONLineCodec{},
-        cfg["listen"].(string), uint32(cfg["port"].(float64)), nil}
+	log.Info("Creating TCPJSONInput")
+	m := TCPJSONInput{NewComponentBase(inQ, outQ, cfg),
+		&JSONLineCodec{},
+		cfg["listen"].(string), uint32(cfg["port"].(float64)), nil}
 
-    m.Tag = "IN-TCP-JSON"
+	m.Tag = "IN-TCP-JSON"
 
-    return &m
+	return &m
 }
 
-func  (p *TCPJSONInput) Signal(string) {}
+func (p *TCPJSONInput) Signal(string) {}
 
 func (p *TCPJSONInput) Run() {
-    pstr := strconv.FormatInt(int64(p.port), 10)
+	pstr := strconv.FormatInt(int64(p.port), 10)
 
-    // Init a TCP socket
-    l, err := net.Listen("tcp", p.host+":"+pstr)
-    if err != nil {
-        log.Error("Error listening:", err.Error())
-        os.Exit(1)
-    }
+	// Init a TCP socket
+	l, err := net.Listen("tcp", p.host+":"+pstr)
+	if err != nil {
+		log.Error("Error listening:", err.Error())
+		os.Exit(1)
+	}
 
-    p.Sock = l
+	p.Sock = l
 
-    // Close the listener when the application closes.
-    defer p.Sock.Close()
+	// Close the listener when the application closes.
+	defer p.Sock.Close()
 
-    log.Info("Listening on " + p.host+":"+pstr)
-    for !p.MustStop {
-        // Listen for an incoming connection.
-        conn, err := l.Accept()
-        if err != nil {
-            log.Error("Error accepting: ", err.Error())
-            os.Exit(1)
-        }
-        log.Info("Accepted " + conn.RemoteAddr().String())
-        // Handle connections in a new goroutine.
-        go p.handleRequest(conn)
-    }
+	log.Info("Listening on " + p.host + ":" + pstr)
+	for !p.MustStop {
+		// Listen for an incoming connection.
+		conn, err := l.Accept()
+		if err != nil {
+			log.Error("Error accepting: ", err.Error())
+			os.Exit(1)
+		}
+		log.Info("Accepted " + conn.RemoteAddr().String())
+		// Handle connections in a new goroutine.
+		go p.handleRequest(conn)
+	}
 }
 
 // This is a goroutine that will be spawned for each client connected to the
@@ -92,114 +92,111 @@ func (p *TCPJSONInput) Run() {
 // NOTE: Max line/message length is 65k. If this is exceeded, the server will
 // hang-up this connection
 func (p *TCPJSONInput) handleRequest(conn net.Conn) {
-    // Make a buffer to hold incoming data.
-    reader := bufio.NewReader(conn)
-    var tmpdata []byte
+	// Make a buffer to hold incoming data.
+	reader := bufio.NewReader(conn)
+	var tmpdata []byte
 
-    for !p.MustStop {
-        linedata, is_prefix, err := reader.ReadLine()
+	for !p.MustStop {
+		linedata, is_prefix, err := reader.ReadLine()
 
-    	if err == io.EOF {
-    		log.Info("Client disconnected: " + conn.RemoteAddr().String())
-    		break
-    	}
+		if err == io.EOF {
+			log.Info("Client disconnected: " + conn.RemoteAddr().String())
+			break
+		}
 
-        if is_prefix {
-            tmpdata = append(tmpdata, linedata...)
+		if is_prefix {
+			tmpdata = append(tmpdata, linedata...)
 
-            // Max line protection...
-            if len(tmpdata) > 65000 {
-                log.Warn("Connection flood detected. Closing connection: " + conn.RemoteAddr().String())
+			// Max line protection...
+			if len(tmpdata) > 65000 {
+				log.Warn("Connection flood detected. Closing connection: " + conn.RemoteAddr().String())
 				conn.Close()
 				break
-            }
-            continue
-        }
+			}
+			continue
+		}
 
-        tmpdata = append(tmpdata, linedata...)
+		tmpdata = append(tmpdata, linedata...)
 
-        // This should call the correct .formatData() depending on the value of p
-        json_data, err := p.Decoder.FromBytes(tmpdata)
-        if err != nil {
-            log.Error("Failed to decode data from " + conn.RemoteAddr().String())
-            log.Error("   data: " + string(tmpdata))
-            log.Error(err.Error())
-            tmpdata = []byte{}
-            continue
-        }
+		// This should call the correct .formatData() depending on the value of p
+		json_data, err := p.Decoder.FromBytes(tmpdata)
+		if err != nil {
+			log.Error("Failed to decode data from " + conn.RemoteAddr().String())
+			log.Error("   data: " + string(tmpdata))
+			log.Error(err.Error())
+			tmpdata = []byte{}
+			continue
+		}
 
-        e := NewEvent(json_data)
-        json_data["_from_addr"], json_data["_from_port"], _ = net.SplitHostPort(conn.RemoteAddr().String())
-        p.OutQ<-e
+		e := NewEvent(json_data)
+		json_data["_from_addr"], json_data["_from_port"], _ = net.SplitHostPort(conn.RemoteAddr().String())
+		p.OutQ <- e
 
-        tmpdata = []byte{}
+		tmpdata = []byte{}
 
-        // Stats
-        p.StatsAddMesg()
-        p.PrintStats()
+		// Stats
+		p.StatsAddMesg()
+		p.PrintStats()
 
-    }
+	}
 }
 
 // TCP CSV implementation
 type TCPCSVInput struct {
-    *TCPJSONInput
+	*TCPJSONInput
 }
 
 func NewTCPCSVInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
-    log.Info("Creating TCPCSVInput")
+	log.Info("Creating TCPCSVInput")
 
-    // Defaults...
-    m := TCPCSVInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+	// Defaults...
+	m := TCPCSVInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
 
-    m.Tag = "IN-TCP-CSV"
+	m.Tag = "IN-TCP-CSV"
 
-    // Change to CSV
-    c := &CSVLineCodec{nil, ","[0], true}
-    cfgbytes, _ := json.Marshal(cfg)
-    json.Unmarshal(cfgbytes, c)
-    m.Decoder = c
+	// Change to CSV
+	c := &CSVLineCodec{nil, ","[0], true}
+	cfgbytes, _ := json.Marshal(cfg)
+	json.Unmarshal(cfgbytes, c)
+	m.Decoder = c
 
-    return &m
+	return &m
 }
-
 
 // TCP Raw implementation
 type TCPRawInput struct {
-    *TCPJSONInput
+	*TCPJSONInput
 }
 
 func NewTCPRawInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
-    log.Info("Creating TCPRawInput")
+	log.Info("Creating TCPRawInput")
 
-    // Defaults...
-    m := TCPRawInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+	// Defaults...
+	m := TCPRawInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
 
-    m.Tag = "IN-TCP-RAW"
+	m.Tag = "IN-TCP-RAW"
 
-    // Change to CSV
-    m.Decoder = &RawLineCodec{}
+	// Change to CSV
+	m.Decoder = &RawLineCodec{}
 
-    return &m
+	return &m
 }
-
-
 
 // TCP String implementation
 type TCPStrInput struct {
-    *TCPJSONInput
+	*TCPJSONInput
 }
 
 func NewTCPStrInput(inQ chan *Event, outQ chan *Event, cfg Config) Component {
-    log.Info("Creating TCPStrInput")
+	log.Info("Creating TCPStrInput")
 
-    // Defaults...
-    m := TCPStrInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
+	// Defaults...
+	m := TCPStrInput{NewTCPJSONInput(inQ, outQ, cfg).(*TCPJSONInput)}
 
-    m.Tag = "IN-TCP-STR"
+	m.Tag = "IN-TCP-STR"
 
-    // Change to CSV
-    m.Decoder = &StringLineCodec{}
+	// Change to CSV
+	m.Decoder = &StringLineCodec{}
 
-    return &m
+	return &m
 }

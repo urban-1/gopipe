@@ -5,7 +5,7 @@
 package output
 
 import (
-    "gopipe/core"
+    "github.com/urban-1/gopipe/core"
     log "github.com/sirupsen/logrus"
 )
 

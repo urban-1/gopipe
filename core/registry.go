@@ -6,7 +6,7 @@
 package core
 
 import (
-    log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // Dont even try to pronounce it...
@@ -17,10 +17,10 @@ var registry Registry
 
 // Singleton implementation that returns the Global registry
 func GetRegistryInstance() Registry {
-    if (registry == nil) {
-        registry = make(Registry)
-        log.Info("Created...")
-    }
+	if (registry == nil) {
+		registry = make(Registry)
+		log.Info("Created...")
+	}
 
-    return registry
+	return registry
 }
