@@ -1,9 +1,8 @@
-package main
+package proc
 
 import (
     "testing"
-    "gopipe/proc"
-
+    . "gopipe/tests"
 )
 
 
@@ -11,7 +10,7 @@ func TestLogProc(t *testing.T) {
     in,  out := GetChannels()
     in <- GetEvent(`{"doesnt": "matter"}`)
 
-    comp := proc.NewLogProc(in, out, GetConfig(`{"level": "error"}`))
+    comp := NewLogProc(in, out, GetConfig(`{"level": "error"}`))
     go comp.Run()
 
     e := <-out
