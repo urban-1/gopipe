@@ -1,71 +1,72 @@
 /*
-    - CAST: Change the type of a field. Supported targets are int, float and string
- */
+   - CAST: Change the type of a field. Supported targets are int, float and string
+*/
 package proc
 
 import (
-    "fmt"
-    "strconv"
-    . "gopipe/core"
+	"fmt"
+	"strconv"
 
-    log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
+	"github.com/urban-1/gopipe/core"
 )
 
 func init() {
-    log.Info("Registering CastProc")
-    GetRegistryInstance()["CastProc"] = NewCastProc
+	log.Info("Registering CastProc")
+	core.GetRegistryInstance()["CastProc"] = NewCastProc
 }
 
 type CastProc struct {
-    *ComponentBase
-    Fields []string
-    Types []string
+	*core.ComponentBase
+	Fields []string
+	Types  []string
 }
 
-func NewCastProc(inQ chan *Event, outQ chan *Event, cfg Config) Component {
-    log.Info("Creating CastProc")
+func NewCastProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
+	log.Info("Creating CastProc")
 
-    fields := []string{}
-    if tmp, ok := cfg["fields"].([]interface{}); ok {
-        fields = InterfaceToStringArray(tmp)
-    }
+	fields := []string{}
+	if tmp, ok := cfg["fields"].([]interface{}); ok {
+		fields = core.InterfaceToStringArray(tmp)
+	}
 
-    types := []string{}
-    if tmp, ok := cfg["types"].([]interface{}); ok {
-        types = InterfaceToStringArray(tmp)
-    }
+	types := []string{}
+	if tmp, ok := cfg["types"].([]interface{}); ok {
+		types = core.InterfaceToStringArray(tmp)
+	}
 
-    m := &CastProc{NewComponentBase(inQ, outQ, cfg), fields, types}
-    m.Tag = "CAST-LOG"
-    return m
+	m := &CastProc{core.NewComponentBase(inQ, outQ, cfg), fields, types}
+	m.Tag = "CAST-LOG"
+	return m
 }
 
-func  (p *CastProc) Signal(string) {}
+func (p *CastProc) Signal(string) {}
 
 func (p *CastProc) Run() {
 
-    p.MustStop = false
-    for !p.MustStop {
+	p.MustStop = false
+	for !p.MustStop {
 
-        e, err := p.ShouldRun()
-        if err != nil {
-            continue
-        }
+		e, err := p.ShouldRun()
+		if err != nil {
+			continue
+		}
 
-        for index, field := range p.Fields {
-            value, ok := e.Data[field]
-            if !ok {
-                continue
-            }
+		for index, field := range p.Fields {
+			value, ok := e.Data[field]
+			if !ok {
+				continue
+			}
 
 			switch p.Types[index] {
-			case "string": fallthrough
-            case "str":
+			case "string":
+				fallthrough
+			case "str":
 				e.Data[field] = fmt.Sprintf("%v", value)
 
 			case "int":
 				switch v := value.(type) {
-                case int64:
+				case int64:
 				case int:
 					e.Data[field] = int64(v)
 				case int8:
@@ -86,8 +87,8 @@ func (p *CastProc) Run() {
 					}
 				}
 			case "float":
-                switch v := value.(type) {
-                case float64:
+				switch v := value.(type) {
+				case float64:
 				case int:
 					e.Data[field] = float64(v)
 				case int8:
@@ -104,18 +105,17 @@ func (p *CastProc) Run() {
 					if vparse, err := strconv.ParseFloat(fmt.Sprintf("%v", v), 64); err == nil {
 						e.Data[field] = vparse
 					}
-	            }
-            }
-	    }
+				}
+			}
+		}
 
-        p.OutQ<-e
+		p.OutQ <- e
 
+		// Stats
+		p.StatsAddMesg()
+		p.PrintStats()
 
-        // Stats
-        p.StatsAddMesg()
-        p.PrintStats()
+	}
 
-    }
-
-    log.Info("CastProc Stopping!?")
+	log.Info("CastProc Stopping!?")
 }
