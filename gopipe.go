@@ -1,12 +1,8 @@
-/*
-    The main `gopipe` binary.
-
-    Reads config, creates modules and channels and starts the whole pipeline...
-
-    Given thet all modules are reusable, one can use the rest of the packages as
-    library of components and write their own "main". This could accept different
-    config formats, customize the logger, etc
- */
+// Gopipe reads config, creates modules and channels and starts the whole pipeline...
+//
+// Given thet all modules are reusable, one can use the rest of the packages as
+// library of components and write their own "main". This could accept different
+// config formats, customize the logger, etc
 package main
 
 import (
@@ -21,12 +17,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-
 	"github.com/urban-1/gopipe/core"
 	_ "github.com/urban-1/gopipe/input"
 	_ "github.com/urban-1/gopipe/output"
 	_ "github.com/urban-1/gopipe/proc"
+	"github.com/urfave/cli"
 )
 
 // Store our modules
@@ -42,33 +37,33 @@ func init() {
 // return an instance
 func instanceFromConfig(cfg core.Config, ch1 chan *core.Event, ch2 chan *core.Event, reg core.Registry) (core.Component, error) {
 
-	module_name, ok := cfg["module"].(string)
+	moduleName, ok := cfg["module"].(string)
 	if !ok {
 		log.Error("Missing 'module' (module name) from configuration")
 		return nil, cli.NewExitError("Missing 'module' (module name) from configuration", -3)
 	}
 
-	log.Info("Loading ", module_name)
+	log.Info("Loading ", moduleName)
 
-	mod_constructor, ok := reg[module_name]
+	modConstructor, ok := reg[moduleName]
 	if !ok {
-		log.Error("Unknown module '", module_name, "'")
-		return nil, cli.NewExitError("Unknown module '"+module_name+"'", -4)
+		log.Error("Unknown module '", moduleName, "'")
+		return nil, cli.NewExitError("Unknown module '"+moduleName+"'", -4)
 	}
 
 	log.Info("Loaded!")
 
-	return mod_constructor(ch1, ch2, cfg), nil
+	return modConstructor(ch1, ch2, cfg), nil
 }
 
 // Loop for ever while sleeping for interval_seconds in every iteration
 // and execut a command (discarding output)
-func runTask(name string, parts []string, interval_seconds uint64, signals []interface{}) {
+func runTask(name string, parts []string, intervalSeconds uint64, signals []interface{}) {
 	cmd, args := parts[0], parts[1:]
 	for {
 		if err := exec.Command(cmd, args...).Run(); err != nil {
 			log.Error("Failed to run command '" + name + "': " + err.Error())
-			time.Sleep(time.Duration(interval_seconds) * time.Second)
+			time.Sleep(time.Duration(intervalSeconds) * time.Second)
 			continue
 		}
 		log.Debug("Command '" + name + "' run successfully...")
@@ -80,7 +75,7 @@ func runTask(name string, parts []string, interval_seconds uint64, signals []int
 			log.Infof("Invoking signal '%s' on component %d", sig, mod)
 			mods[mod].Signal(sig)
 		}
-		time.Sleep(time.Duration(interval_seconds) * time.Second)
+		time.Sleep(time.Duration(intervalSeconds) * time.Second)
 	}
 }
 
@@ -122,7 +117,7 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		if (c.String("config") == "") {
+		if c.String("config") == "" {
 			const msg = "You need to provide config file..."
 			log.Error(msg)
 			return cli.NewExitError(msg, -1)
@@ -148,20 +143,20 @@ func main() {
 		}
 
 		// Channel buffer size
-		tmp_f64, ok := CFG["main"].(core.Config)["channel_size"].(float64)
+		tmpF64, ok := CFG["main"].(core.Config)["channel_size"].(float64)
 		if !ok {
 			log.Warn("No buffer length (channel_size) set in main section. Assuming 1")
-			tmp_f64 = 1
+			tmpF64 = 1
 		} else {
-			log.Info("Using buffer length: ", tmp_f64)
+			log.Info("Using buffer length: ", tmpF64)
 		}
 
-		Q_LEN := int(tmp_f64)
+		QLEN := int(tmpF64)
 
 		// Printing frequency
-		tmp_f64, ok = CFG["main"].(core.Config)["stats_every"].(float64)
+		tmpF64, ok = CFG["main"].(core.Config)["stats_every"].(float64)
 		if ok {
-			core.STATS_EVERY = uint64(tmp_f64)
+			core.STATS_EVERY = uint64(tmpF64)
 		}
 
 		// Load registry
@@ -178,7 +173,7 @@ func main() {
 		var chans []chan *core.Event
 
 		// Create the first Q (ouput)
-		tmpch := make(chan *core.Event, Q_LEN)
+		tmpch := make(chan *core.Event, QLEN)
 		chans = append(chans, tmpch)
 
 		// Append in module
@@ -192,7 +187,7 @@ func main() {
 		for index, cfg := range proc {
 			// Create a new one for every output
 
-			chans = append(chans, make(chan *core.Event, Q_LEN))
+			chans = append(chans, make(chan *core.Event, QLEN))
 
 			log.Info("Loading processor module ", index)
 			tmp, err = instanceFromConfig(

@@ -1,13 +1,13 @@
 /*
-    - INLIST: Check if a field of the event exists in a list and store the result
-    (true/false) into another field. The list we check against can be provided by
-    config (static) or can be regularly read from a file. In any case, the items
-    in the list are strings and thus every the data field is converted to string
-    to be checked against the list. The main function/purpose of this plugin is
-    to verify against lists that change regularly (ex IP blacklist) and thus the
-    analysis has to take place at the correct time (the time of the event) and
-    cannot be performed in later time!
- */
+   - INLIST: Check if a field of the event exists in a list and store the result
+   (true/false) into another field. The list we check against can be provided by
+   config (static) or can be regularly read from a file. In any case, the items
+   in the list are strings and thus every the data field is converted to string
+   to be checked against the list. The main function/purpose of this plugin is
+   to verify against lists that change regularly (ex IP blacklist) and thus the
+   analysis has to take place at the correct time (the time of the event) and
+   cannot be performed in later time!
+*/
 package proc
 
 import (
@@ -101,8 +101,8 @@ func (p *InListProc) Run() {
 	log.Debug("InListProc Starting ... ")
 
 	// Spawn the loader
-	if (p.List == nil) {
-		if (p.ReloadMinutes > 0) {
+	if p.List == nil {
+		if p.ReloadMinutes > 0 {
 			// Periodic reloading
 			go func(p *InListProc) {
 				p.loadList()

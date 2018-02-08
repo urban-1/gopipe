@@ -1,8 +1,8 @@
 /*
-    - REGEX: Given a regex with named captures, convert each event from a text
-    one to a data one (using the "message" field, which is where Str codecs store
-    their output)
- */
+   - REGEX: Given a regex with named captures, convert each event from a text
+   one to a data one (using the "message" field, which is where Str codecs store
+   their output)
+*/
 package proc
 
 import (

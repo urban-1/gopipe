@@ -1,7 +1,7 @@
 /*
-    - MD5: Hash a set of given data fields and attach the results back to the
-    event's data. Optionally, a salt can be provided
- */
+   - MD5: Hash a set of given data fields and attach the results back to the
+   event's data. Optionally, a salt can be provided
+*/
 package proc
 
 import (
