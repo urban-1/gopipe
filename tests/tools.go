@@ -43,3 +43,16 @@ func GetEvent(s string) *Event {
 
     return NewEvent(e)
 }
+
+func GetEventRun(s string, run bool) *Event {
+    e := map[string]interface{}{}
+    err := json.Unmarshal([]byte(s), &e)
+    if err != nil {
+        fmt.Printf("User error: cannot create mock event")
+        panic("User error: cannot create mock event")
+    }
+
+    ret := NewEvent(e)
+	ret.ShouldRun.Push(run)
+	return ret
+}
