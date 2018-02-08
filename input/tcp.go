@@ -1,9 +1,9 @@
 /*
-    This package contains all the input modules responsible for generating events in the pipe.
+   This package contains all the input modules responsible for generating events in the pipe.
 
-    - TCP: Listen on a TCP socket for messages. Each line is processed as a
-    separate message. Maximum line length is 65000 bytes
- */
+   - TCP: Listen on a TCP socket for messages. Each line is processed as a
+   separate message. Maximum line length is 65000 bytes
+*/
 package input
 
 import (

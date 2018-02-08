@@ -1,19 +1,19 @@
 /*
-    This package contains all output plugins.
+   This package contains all output plugins.
 
-    Output plugins are mainly used in the "out" section of the config, however,
-    they can also be used in any processing step to split the flow output of
-    the framework. The output compoment should support that which means that it
-    should be aware of the `outQ` and check if is nil ("out" section) or not
-    (processing section):
+   Output plugins are mainly used in the "out" section of the config, however,
+   they can also be used in any processing step to split the flow output of
+   the framework. The output compoment should support that which means that it
+   should be aware of the `outQ` and check if is nil ("out" section) or not
+   (processing section):
 
-        // Check if we are being used in proc!
-        if p.OutQ != nil {
-            p.OutQ<-e
-        }
+       // Check if we are being used in proc!
+       if p.OutQ != nil {
+           p.OutQ<-e
+       }
 
-    - File: Output to timestamped files with regular (time-based) rotation.
- */
+   - File: Output to timestamped files with regular (time-based) rotation.
+*/
 package output
 
 import (

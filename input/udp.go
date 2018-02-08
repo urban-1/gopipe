@@ -1,8 +1,8 @@
 /*
-    - UDP: Listens on a UDP port for messages. Each packet is a separate message
-    and thus the message length is limitted by the packet length (and maybe
-    network MTU)
- */
+   - UDP: Listens on a UDP port for messages. Each packet is a separate message
+   and thus the message length is limitted by the packet length (and maybe
+   network MTU)
+*/
 package input
 
 import (
@@ -101,7 +101,7 @@ func (p *UDPJSONInput) Run() {
 
 /*
  UDP CSV
- */
+*/
 type UDPCSVInput struct {
 	*UDPJSONInput
 }

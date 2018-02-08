@@ -1,9 +1,7 @@
-//
-// - Events: The core data representation of this framework. These are passed
-// around between components using Go channels
-//
 package core
 
+// - Events: The core data representation of this framework. These are passed
+// around between components using Go channels
 import (
 	"encoding/json"
 	"time"

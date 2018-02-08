@@ -1,33 +1,33 @@
 /*
-    - LPM: Longest Prefix Match: Loads a list of prefixes (network addresses)
-    periodically from a file and performs LPM for event data fields. The result
-    can have meta-data which are then exported back to the event's data. For
-    example the following will figure out the matched prefix and Autonomous
-    System number (ASN) and attach then to the event's data:
+   - LPM: Longest Prefix Match: Loads a list of prefixes (network addresses)
+   periodically from a file and performs LPM for event data fields. The result
+   can have meta-data which are then exported back to the event's data. For
+   example the following will figure out the matched prefix and Autonomous
+   System number (ASN) and attach then to the event's data:
 
-        {
-            "module": "LPMProc",
-            "filepath": "/tmp/prefix-asn.txt",
-            "reload_minutes": 1440,
-            "in_fields": ["src", "dst"],
-            "out_fields": [
-                {"newkey": "_{{in_field}}_prefix", "metakey": "prefix"},
-                {"newkey": "_{{in_field}}_asn", "metakey": "asn"}
-            ]
-        }
+       {
+           "module": "LPMProc",
+           "filepath": "/tmp/prefix-asn.txt",
+           "reload_minutes": 1440,
+           "in_fields": ["src", "dst"],
+           "out_fields": [
+               {"newkey": "_{{in_field}}_prefix", "metakey": "prefix"},
+               {"newkey": "_{{in_field}}_asn", "metakey": "asn"}
+           ]
+       }
 
-        // Input data are in the format
+       // Input data are in the format
 
-            prefix/len JSON-metadata
+           prefix/len JSON-metadata
 
-        Example:
+       Example:
 
-            10.0.0.0/8 {"asn": -1, "owner": "me"}
+           10.0.0.0/8 {"asn": -1, "owner": "me"}
 
-        Output:
+       Output:
 
-            {..."_src_asn": -1, "_dst_asn": -1, "_src_prefix": "10.0.0.0/8" ...}
- */
+           {..."_src_asn": -1, "_dst_asn": -1, "_src_prefix": "10.0.0.0/8" ...}
+*/
 package proc
 
 import (

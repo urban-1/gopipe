@@ -1,4 +1,4 @@
-// Core package contains all common structs and functions.
+// Package core contains all common structs and functions.
 //
 // - Config: An alias to `map[string]interface{}`
 //
@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Component Global Config: How often to print stats in the log. This can be
+// STATS_EVERY sets how often to print stats in the log. This can be
 // changes in configuration via `stats_every`
 var STATS_EVERY uint64 = 100000
 
@@ -58,12 +58,12 @@ func (c *ComponentStats) AddMessage() {
 
 	if c.LastUpdate == 0 {
 		c.LastUpdate = now
-		c.MsgCount += 1
+		c.MsgCount++
 		c.MsgCountOld = 0
 		return
 	}
 
-	c.MsgCount += 1
+	c.MsgCount++
 
 	// 5 second interval stats
 	if now-c.LastUpdate > 3 {

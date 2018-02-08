@@ -1,8 +1,3 @@
-//
-// - Line codecs: Implement the LineCodec interface and are used for converting
-// between input and output types. The interface allows different type of codecs
-// to be used in the same transport class (ex UDP)
-//
 package core
 
 import (
@@ -17,6 +12,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Line codecs: Implement the LineCodec interface and are used for converting
+// between input and output types. The interface allows different type of codecs
+// to be used in the same transport class (ex UDP)
 type LineCodec interface {
 	FromBytes(data []byte) (map[string]interface{}, error)
 	ToBytes(data map[string]interface{}) ([]byte, error)

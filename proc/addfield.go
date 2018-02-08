@@ -1,12 +1,12 @@
 /*
-    The package having the processing components.
+   The package having the processing components.
 
-    Every processing component reads, modifies messages and pushes to the output
-    channel.
+   Every processing component reads, modifies messages and pushes to the output
+   channel.
 
-    - ADD: Add a field to the event's data. TODO: Add expression support if easy
-    instead of static value
- */
+   - ADD: Add a field to the event's data. TODO: Add expression support if easy
+   instead of static value
+*/
 package proc
 
 import (

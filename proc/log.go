@@ -1,7 +1,7 @@
 /*
-    - LOG: Use the logger (logrus) to print the event. This component does not
-    modify the events in any way. NOTE: This can also be used as an OUTPUT component!
- */
+   - LOG: Use the logger (logrus) to print the event. This component does not
+   modify the events in any way. NOTE: This can also be used as an OUTPUT component!
+*/
 package proc
 
 import (
@@ -51,7 +51,7 @@ func NewLogProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) co
 // Handle signals for this component
 func (p *LogProc) Signal(string) {}
 
-// Our component's main function 
+// Our component's main function
 func (p *LogProc) Run() {
 	log.Debug("LogProc Starting ... ")
 	p.MustStop = false

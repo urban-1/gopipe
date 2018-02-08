@@ -1,7 +1,7 @@
 /*
-    - NULL: Just empty that channel! NOTE: This component CANNOT be used in the
-    processing stages, since whereever put, it acts like a blackhole...
- */
+   - NULL: Just empty that channel! NOTE: This component CANNOT be used in the
+   processing stages, since whereever put, it acts like a blackhole...
+*/
 package output
 
 import (

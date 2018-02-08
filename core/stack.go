@@ -36,7 +36,7 @@ func (s *BoolStack) Pop() (bool, error) {
 	return res, nil
 }
 
-func (s *BoolStack) Size() (int) {
+func (s *BoolStack) Size() int {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 

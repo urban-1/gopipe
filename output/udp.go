@@ -1,7 +1,7 @@
 /*
-    - UDP: Send UDP datagrams out ... Particularly useful for flow sampler and
-    replication configurations
- */
+   - UDP: Send UDP datagrams out ... Particularly useful for flow sampler and
+   replication configurations
+*/
 package output
 
 import (
