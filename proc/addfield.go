@@ -56,7 +56,6 @@ func NewAddFieldProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Confi
 
 func (p *AddFieldProc) Signal(string) {}
 
-// TODO: Add expression support if easy
 func (p *AddFieldProc) Run() {
 	log.Debug("AddFieldProc Starting ... ")
 	p.MustStop = false

@@ -4,7 +4,7 @@ import (
     "fmt"
     "encoding/json"
 
-    . "gopipe/core"
+    . "github.com/urban-1/gopipe/core"
 
     log "github.com/sirupsen/logrus"
 )
