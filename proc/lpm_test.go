@@ -119,6 +119,43 @@ func TestLPMV6Inner(t *testing.T) {
 	}
 }
 
+func TestLPMNotFound(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEvent(`{"src": "176.52.0.10"}`)
+
+	comp := getLPM(in, out)
+	go comp.Run()
+
+	e := <-out
+	if _, ok := e.Data["_src_prefix"]; !ok {
+		t.Error("LPM did not add anything!!")
+	}
+	comment, _ := e.Data["_src_comment"];
+	if comment != "" {
+		t.Error("LPM Found a prefix!!! Interesting")
+		t.Error(e.Data)
+	}
+}
+
+func TestLPMMetaNotFound(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEvent(`{"src": "4.31.239.225"}`)
+
+	comp := getLPM(in, out)
+	go comp.Run()
+
+	e := <-out
+	if _, ok := e.Data["_src_prefix"]; !ok {
+		t.Error("LPM did not add anything!!")
+	}
+	comment, _ := e.Data["_src_comment"];
+	if comment != nil {
+		t.Error("LPM Found a prefix!!! Interesting")
+		t.Error(e.Data)
+	}
+}
+
+
 func TestLPMShouldNotRun(t *testing.T) {
 	in, out := GetChannels()
 	in <- GetEventRun(`{"src": "2001:500:124:0001::10"}`, false)
