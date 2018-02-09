@@ -76,32 +76,75 @@ func TestLPMV4Inner(t *testing.T) {
 	}
 }
 
-// func TestLPMShouldNotRun(t *testing.T) {
-// 	in, out := GetChannels()
-// 	in <- GetEventRun(`{"doesnt": "matter"}`, false)
-//
-// 	comp := getLPM()
-// 	go comp.Run()
-//
-// 	e := <-out
-// 	if _, ok := e.Data["test"]; ok {
-// 		// Has the new value!!! raise error
-// 		t.Error("LPM: run when it shouldnt...")
-// 		t.Error(e.Data)
-// 	}
-// }
-//
-// func TestLPMShouldRun(t *testing.T) {
-// 	in, out := GetChannels()
-// 	in <- GetEventRun(`{"doesnt": "matter"}`, true)
-//
-// 	comp := NewLPMProc(in, out, GetConfig(`{"field_name":"ts"}`))
-// 	go comp.Run()
-//
-// 	e := <-out
-// 	if _, ok := e.Data["test"]; ok {
-// 		// Has the new value!!! raise error
-// 		t.Error("LPM: didn't run when it should...")
-// 		t.Error(e.Data)
-// 	}
-// }
+
+func TestLPMV6Outer(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEvent(`{"src": "2001:500:124::10"}`)
+
+	comp := getLPM(in, out)
+	go comp.Run()
+
+	e := <-out
+	if _, ok := e.Data["_src_prefix"]; !ok {
+		t.Error("LPM did not add anything!!")
+	}
+	comment, ok := e.Data["_src_comment"];
+	if !ok {
+		t.Error("LPM Did not add field comment...")
+	}
+	if comment != "v6 outer-range" {
+		t.Error("Failed to match the correct prefix:")
+		t.Error(e.Data)
+	}
+}
+
+func TestLPMV6Inner(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEvent(`{"src": "2001:500:124:0001::10"}`)
+
+	comp := getLPM(in, out)
+	go comp.Run()
+
+	e := <-out
+	if _, ok := e.Data["_src_prefix"]; !ok {
+		t.Error("LPM did not add anything!!")
+	}
+	comment, ok := e.Data["_src_comment"];
+	if !ok {
+		t.Error("LPM Did not add field comment...")
+	}
+	if comment != "v6 inner-range" {
+		t.Error("Failed to match the correct prefix:")
+		t.Error(e.Data)
+	}
+}
+
+func TestLPMShouldNotRun(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEventRun(`{"src": "2001:500:124:0001::10"}`, false)
+
+	comp := getLPM(in, out)
+	go comp.Run()
+
+	e := <-out
+	if _, ok := e.Data["_src_asn"]; ok {
+		// Has the new value!!! raise error
+		t.Error("LPM: run when it shouldnt...")
+		t.Error(e.Data)
+	}
+}
+
+func TestLPMShouldRun(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEventRun(`{"src": "2001:500:124:0001::10"}`, true)
+
+	comp := getLPM(in, out)
+	go comp.Run()
+
+	e := <-out
+	if _, ok := e.Data["_src_asn"]; !ok {
+		// Has the new value!!! raise error
+		t.Error("LPM: didn't run when it should...")
+		t.Error(e.Data)
+	}
+}
