@@ -22,7 +22,7 @@ func init() {
 type AddTimeProc struct {
 	*core.ComponentBase
 	FieldName string
-        InSeconds bool
+	InSeconds bool
 }
 
 func NewAddTimeProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) core.Component {
@@ -33,9 +33,9 @@ func NewAddTimeProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config
 	}
 
 	in_s, ok := cfg["in_seconds"].(bool)
-        if !ok {
-                in_s = false
-        }
+	if !ok {
+		in_s = false
+	}
 
 	m := &AddTimeProc{core.NewComponentBase(inQ, outQ, cfg), field_name, in_s}
 	m.Tag = "PROC-ADDTIME"
@@ -50,8 +50,8 @@ func (p *AddTimeProc) Run() {
 
 	factor := int64(1000000)
 	if p.InSeconds {
-        	factor = 1000000000
-        }
+		factor = 1000000000
+	}
 	for !p.MustStop {
 		log.Debug("AddTimeProc Reading")
 		e, err := p.ShouldRun()
@@ -59,7 +59,6 @@ func (p *AddTimeProc) Run() {
 			continue
 		}
 
-		
 		e.Data[p.FieldName] = uint64(e.Timestamp.UnixNano() / factor)
 		p.OutQ <- e
 
