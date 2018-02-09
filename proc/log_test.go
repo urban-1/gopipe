@@ -27,6 +27,7 @@ func TestLogProcInfo(t *testing.T) {
 	in <- GetEvent(`{"doesnt": "matter"}`)
 
 	comp := NewLogProc(in, out, GetConfig(`{"level": "info"}`))
+	
 	go comp.Run()
 
 	e := <-out

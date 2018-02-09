@@ -126,7 +126,7 @@ func (p *LPMProc) Run() {
 
 	for !p.MustStop {
 		// Do not read until we lock the tree!
-		log.Debug("LPMProc Reading ", p.MustStop)
+		log.Debug("LPMProc Reading stop=", p.MustStop)
 		e, err := p.ShouldRun()
 		if err != nil {
 			continue
@@ -147,6 +147,7 @@ func (p *LPMProc) Run() {
 			}
 			// Get the node
 			meta, err := p.Tree.FindCIDR(what)
+			log.Debug(what, meta)
 			if err != nil {
 				log.Error("LPM error in find: ", err.Error())
 				continue
@@ -197,7 +198,7 @@ func (p *LPMProc) loadTree() {
 	line, _, err := reader.ReadLine()
 	for err != io.EOF {
 		json_data := map[string]interface{}{}
-		parts := bytes.Split(line, []byte(" "))
+		parts := bytes.SplitAfterN(line, []byte(" "), 2)
 		meta := bytes.Join(parts[1:], []byte(""))
 
 		d := json.NewDecoder(bytes.NewReader(meta))
@@ -205,6 +206,7 @@ func (p *LPMProc) loadTree() {
 
 		if d.Decode(&json_data) != nil {
 			log.Error("LPM: Unable to parse prefix meta-data: ", string(meta))
+			continue
 		}
 
 		json_data["prefix"] = string(parts[0])
