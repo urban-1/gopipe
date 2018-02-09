@@ -45,7 +45,7 @@ func TestMd5ShouldRun(t *testing.T) {
 	in <- GetEventRun(`{"a": "1", "b": 100}`, true)
 
 	comp := NewMd5Proc(in, out, GetConfig(`{
-        "in_fields": ["b"],
+        "in_fields": ["a"],
         "out_fields": ["md5"],
         "salt": "test"
     }`))
@@ -55,5 +55,6 @@ func TestMd5ShouldRun(t *testing.T) {
 	if _, ok := e.Data["md5"]; !ok {
 		// Has the new value!!! raise error
 		t.Error("Md5: didn't run when it should...")
+		t.Error(e.Data)
 	}
 }

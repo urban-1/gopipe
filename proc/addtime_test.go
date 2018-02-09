@@ -18,6 +18,23 @@ func TestAddTime(t *testing.T) {
 	}
 }
 
+func TestAddTimeSecs(t *testing.T) {
+	in, out := GetChannels()
+	in <- GetEvent(`{"doesnt": "matter"}`)
+
+	comp := NewAddTimeProc(in, out, GetConfig(`{"field_name":"ts", "in_seconds": true}`))
+	go comp.Run()
+
+	e := <-out
+	ts, ok := e.Data["ts"]
+	if !ok {
+		t.Error("AddTime did not add anything!!")
+	}
+	if ts.(uint64) >= 10000000000 {
+		t.Error("AddTime did not add timestamp in seconds")
+	}
+}
+
 func TestAddTimeShouldNotRun(t *testing.T) {
 	in, out := GetChannels()
 	in <- GetEventRun(`{"doesnt": "matter"}`, false)
