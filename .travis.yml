@@ -27,7 +27,9 @@ notifications:
   email: false
 
 env:
-    PKG_CONFIG_PATH=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local/lib/pkgconfig LD_LIBRARY_PATH=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local/lib
+    global:
+        - PKG_CONFIG_PATH=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local/lib/pkgconfig
+        - LD_LIBRARY_PATH=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local/lib
 
 # Anything in before_script that returns a nonzero exit code will
 # flunk the build and immediately stop. It's sorta like having
