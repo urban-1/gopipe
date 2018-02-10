@@ -26,8 +26,10 @@ matrix:
 notifications:
   email: false
 
-# env:
-#     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+env:
+    #PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+    # Try to ensure we are linking kafka ok...
+    LD_LIBRARY_PATH=/usr/local/lib
 
 # Anything in before_script that returns a nonzero exit code will
 # flunk the build and immediately stop. It's sorta like having
