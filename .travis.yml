@@ -39,5 +39,5 @@ before_script:
 # in a modern Go project.
 script:
   - test -z $(gofmt -s -l $GO_FILES)         # Fail if a .go file hasn't been formatted with gofmt
-  - go test -v -cover -coverprofile=c.out $MODS
+  - go test -v -cover $MODS
   - go vet $MODS                             # go vet is the official Go static analyzer

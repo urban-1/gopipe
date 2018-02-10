@@ -36,7 +36,7 @@ func NewIfProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) cor
 		panic("If module needs a condition")
 	}
 
-	functions := map[string]govaluate.ExpressionFunction {
+	functions := map[string]govaluate.ExpressionFunction{
 		"json_to_int64": func(args ...interface{}) (interface{}, error) {
 			return args[0].(json.Number).Int64()
 		},

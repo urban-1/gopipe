@@ -1,12 +1,12 @@
 package input
 
 import (
-	. "github.com/urban-1/gopipe/tests"
-	"github.com/urban-1/gopipe/output"
+	"encoding/json"
 	"github.com/urban-1/gopipe/core"
+	"github.com/urban-1/gopipe/output"
+	. "github.com/urban-1/gopipe/tests"
 	"testing"
 	"time"
-	"encoding/json"
 )
 
 func TestUDP(t *testing.T) {

@@ -1,12 +1,12 @@
 package proc
 
 import (
+	"fmt"
 	. "github.com/urban-1/gopipe/core"
 	. "github.com/urban-1/gopipe/tests"
-	"fmt"
-	"testing"
-	"runtime"
 	"path"
+	"runtime"
+	"testing"
 )
 
 func getMockFile() string {
@@ -45,7 +45,7 @@ func TestLPMV4Outer(t *testing.T) {
 	if _, ok := e.Data["_src_prefix"]; !ok {
 		t.Error("LPM did not add anything!!")
 	}
-	comment, ok := e.Data["_src_comment"];
+	comment, ok := e.Data["_src_comment"]
 	if !ok {
 		t.Error("LPM Did not add field comment...")
 	}
@@ -66,7 +66,7 @@ func TestLPMV4Inner(t *testing.T) {
 	if _, ok := e.Data["_src_prefix"]; !ok {
 		t.Error("LPM did not add anything!!")
 	}
-	comment, ok := e.Data["_src_comment"];
+	comment, ok := e.Data["_src_comment"]
 	if !ok {
 		t.Error("LPM Did not add field comment...")
 	}
@@ -75,7 +75,6 @@ func TestLPMV4Inner(t *testing.T) {
 		t.Error(e.Data)
 	}
 }
-
 
 func TestLPMV6Outer(t *testing.T) {
 	in, out := GetChannels()
@@ -88,7 +87,7 @@ func TestLPMV6Outer(t *testing.T) {
 	if _, ok := e.Data["_src_prefix"]; !ok {
 		t.Error("LPM did not add anything!!")
 	}
-	comment, ok := e.Data["_src_comment"];
+	comment, ok := e.Data["_src_comment"]
 	if !ok {
 		t.Error("LPM Did not add field comment...")
 	}
@@ -109,7 +108,7 @@ func TestLPMV6Inner(t *testing.T) {
 	if _, ok := e.Data["_src_prefix"]; !ok {
 		t.Error("LPM did not add anything!!")
 	}
-	comment, ok := e.Data["_src_comment"];
+	comment, ok := e.Data["_src_comment"]
 	if !ok {
 		t.Error("LPM Did not add field comment...")
 	}
@@ -130,7 +129,7 @@ func TestLPMNotFound(t *testing.T) {
 	if _, ok := e.Data["_src_prefix"]; !ok {
 		t.Error("LPM did not add anything!!")
 	}
-	comment, _ := e.Data["_src_comment"];
+	comment, _ := e.Data["_src_comment"]
 	if comment != "" {
 		t.Error("LPM Found a prefix!!! Interesting")
 		t.Error(e.Data)
@@ -148,13 +147,12 @@ func TestLPMMetaNotFound(t *testing.T) {
 	if _, ok := e.Data["_src_prefix"]; !ok {
 		t.Error("LPM did not add anything!!")
 	}
-	comment, _ := e.Data["_src_comment"];
+	comment, _ := e.Data["_src_comment"]
 	if comment != nil {
 		t.Error("LPM Found a prefix!!! Interesting")
 		t.Error(e.Data)
 	}
 }
-
 
 func TestLPMShouldNotRun(t *testing.T) {
 	in, out := GetChannels()

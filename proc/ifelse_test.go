@@ -119,7 +119,6 @@ func TestElse2(t *testing.T) {
 	}
 }
 
-
 // Correct condition, but disabled due to parent block
 func TestElseParentDisabled(t *testing.T) {
 	in, out := GetChannels()
