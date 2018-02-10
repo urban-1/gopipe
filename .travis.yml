@@ -10,6 +10,11 @@ go:
   - 1.9
   # - master
 
+matrix:
+    include:
+      - os: linux
+        dist: trusty
+
 # Skip the install step. Don't `go get` dependencies. Only build with the
 # code in vendor/
 install: true
