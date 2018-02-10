@@ -24,7 +24,6 @@ func TestUDPJSON(t *testing.T) {
 		{"target": "localhost", "port": 10000}
 	`))
 
-
 	go cin.Run()
 	time.Sleep(time.Duration(1) * time.Second)
 	go cout.Run()
@@ -48,7 +47,6 @@ func TestUDPJSON(t *testing.T) {
 
 }
 
-
 func TestUDPCSV(t *testing.T) {
 	in, out := GetChannels()
 	mid := make(chan *core.Event, 1)
@@ -70,7 +68,7 @@ func TestUDPCSV(t *testing.T) {
 	// Test UDP as middle stage
 	e := <-mid
 
-    // Here we are dealing with json.... (from GetEvent)
+	// Here we are dealing with json.... (from GetEvent)
 	tmp, _ := e.Data["a"].(json.Number).Int64()
 	if tmp != 1 {
 		t.Error("UDP MID error: I was expecting a: 1")
@@ -85,8 +83,6 @@ func TestUDPCSV(t *testing.T) {
 		t.Error(e.Data)
 	}
 }
-
-
 
 func TestUDPRaw(t *testing.T) {
 	in, out := GetChannels()
@@ -110,7 +106,7 @@ func TestUDPRaw(t *testing.T) {
 	// Test UDP as middle stage
 	e := <-mid
 
-    // Here we are dealing with json.... (from GetEvent)
+	// Here we are dealing with json.... (from GetEvent)
 	if bytes.Compare(e.Data["bytes"].([]byte), bin) != 0 {
 		t.Error("UDP MID error: I was expecting a: 1")
 		t.Error(e.Data)
@@ -130,7 +126,7 @@ func TestUDPStr(t *testing.T) {
 	mid := make(chan *core.Event, 1)
 
 	msg := "[32241.135047] cfg80211:  DFS Master region: unset"
-	out <- GetEvent(`{"message": "`+msg+`"}`)
+	out <- GetEvent(`{"message": "` + msg + `"}`)
 
 	cin := NewUDPStrInput(nil, in, GetConfig(`
 		{"listen": "127.0.0.1", "port": 10003}
@@ -147,7 +143,7 @@ func TestUDPStr(t *testing.T) {
 	// Test UDP as middle stage
 	e := <-mid
 
-    // Here we are dealing with json.... (from GetEvent)
+	// Here we are dealing with json.... (from GetEvent)
 	if e.Data["message"].(string) != msg {
 		t.Error("UDP MID error: I was expecting a: 1")
 		t.Error(e.Data)

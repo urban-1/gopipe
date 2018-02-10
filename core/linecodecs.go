@@ -85,7 +85,6 @@ func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 			continue
 		}
 
-
 		tmpf, err = strconv.ParseFloat(v, 64)
 		if err == nil {
 			json_data[c.Headers[i]] = tmpf
