@@ -42,14 +42,14 @@ before_script:
   - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/) # All the .go files, excluding vendor/
   - GO_IMPORTS=$(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' $MODS | sort | uniq | grep -v gopipe)
   - go get -u -v -d $GO_IMPORTS
-  - ( mkdir -p ./build/src
-      mkdir -p ./build/local
-      cd ./build/src
-      git clone https://github.com/edenhill/librdkafka.git
-      cd librdkafka
-      git checkout $KAFKA_VERSION
-      ./configure --prefix=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local
-      make
+  - ( mkdir -p ./build/src;
+      mkdir -p ./build/local;
+      cd ./build/src;
+      git clone https://github.com/edenhill/librdkafka.git;
+      cd librdkafka;
+      git checkout $KAFKA_VERSION;
+      ./configure --prefix=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local &&
+      make &&
       make install)
   - cat $PKG_CONFIG_PATH/rdkafka.pc
 
