@@ -27,9 +27,7 @@ notifications:
   email: false
 
 env:
-    #PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-    # Try to ensure we are linking kafka ok...
-    LD_LIBRARY_PATH=/usr/local/lib
+    PKG_CONFIG_PATH=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local/lib/pkgconfig LD_LIBRARY_PATH=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local/lib
 
 # Anything in before_script that returns a nonzero exit code will
 # flunk the build and immediately stop. It's sorta like having
@@ -42,9 +40,9 @@ before_script:
       git clone https://github.com/edenhill/librdkafka.git;
       cd librdkafka;
       git checkout $KAFKA_VERSION;
-      ./configure  &&
+      ./configure --prefix=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local &&
       make &&
-      sudo make install)
+      make install)
   - MODS="./input ./proc ./output"
   - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/) # All the .go files, excluding vendor/
   - GO_IMPORTS=$(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' $MODS | sort | uniq | grep -v gopipe)
