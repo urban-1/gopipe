@@ -13,7 +13,7 @@ go:
 matrix:
     include:
       - os: linux
-        dist: trusty
+        dist: xenial
 
 # Skip the install step. Don't `go get` dependencies. Only build with the
 # code in vendor/
