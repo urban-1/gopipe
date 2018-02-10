@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -34,7 +35,11 @@ func GetConfig(s string) Config {
 
 func GetEvent(s string) *Event {
 	e := map[string]interface{}{}
-	err := json.Unmarshal([]byte(s), &e)
+
+	d := json.NewDecoder(bytes.NewReader([]byte(s)))
+	d.UseNumber()
+	err := d.Decode(&e)
+
 	if err != nil {
 		fmt.Printf("User error: cannot create mock event")
 		panic("User error: cannot create mock event")

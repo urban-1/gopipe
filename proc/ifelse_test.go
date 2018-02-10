@@ -9,7 +9,9 @@ func TestIf(t *testing.T) {
 	in, out := GetChannels()
 	in <- GetEvent(`{"a": 1}`)
 
-	comp := NewIfProc(in, out, GetConfig(`{"condition": "a == 1"}`))
+	// This is MENTAL: TODO: Add a warning in the docs once you figure it out...
+	// comp := NewIfProc(in, out, GetConfig(`{"condition": "json_to_int64(a) == 1"}`))
+	comp := NewIfProc(in, out, GetConfig(`{"condition": "json_to_float64(a) == 1"}`))
 	go comp.Run()
 
 	e := <-out

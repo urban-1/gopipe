@@ -5,6 +5,7 @@
 package proc
 
 import (
+	"encoding/json"
 	"github.com/Knetic/govaluate"
 	log "github.com/sirupsen/logrus"
 	"github.com/urban-1/gopipe/core"
@@ -35,7 +36,16 @@ func NewIfProc(inQ chan *core.Event, outQ chan *core.Event, cfg core.Config) cor
 		panic("If module needs a condition")
 	}
 
-	expression, err := govaluate.NewEvaluableExpression(cond)
+	functions := map[string]govaluate.ExpressionFunction {
+		"json_to_int64": func(args ...interface{}) (interface{}, error) {
+			return args[0].(json.Number).Int64()
+		},
+		"json_to_float64": func(args ...interface{}) (interface{}, error) {
+			return args[0].(json.Number).Float64()
+		},
+	}
+
+	expression, err := govaluate.NewEvaluableExpressionWithFunctions(cond, functions)
 	if err != nil {
 		panic("If module failed to evaluate condition")
 	}
