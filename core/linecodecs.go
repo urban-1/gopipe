@@ -64,7 +64,7 @@ func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 	}
 
 	if len(record) != len(c.Headers) {
-		return nil, errors.New("Failed to convert CSV to object: Headers and fields mismatch")
+		return nil, errors.New("CSVLineCodec.FromBytes: Failed to convert CSV to object: Headers and fields mismatch")
 	}
 
 	// Convert to internal JSON representation...
@@ -72,6 +72,7 @@ func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 	var tmp int64
 	var tmpf float64
 	for i, v := range record {
+		
 		if !c.Convert {
 			json_data[c.Headers[i]] = v
 			continue
@@ -79,17 +80,17 @@ func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 
 		// Try to see if the value is of another type
 		tmp, err = strconv.ParseInt(v, 10, 64)
-		if err != nil {
+		if err == nil {
 			json_data[c.Headers[i]] = tmp
 			continue
 		}
 
+
 		tmpf, err = strconv.ParseFloat(v, 64)
-		if err != nil {
+		if err == nil {
 			json_data[c.Headers[i]] = tmpf
 			continue
 		}
-
 	}
 
 	return json_data, nil
@@ -99,6 +100,10 @@ func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 	var b bytes.Buffer
 	writer := csv.NewWriter(bufio.NewWriter(&b))
 
+	if len(c.Headers) == 0 {
+		return nil, errors.New("CSVLineCodec.ToBytes: Wrong config - no headers given")
+	}
+
 	var record []string
 	for _, h := range c.Headers {
 		if data[h] == nil {
@@ -107,6 +112,7 @@ func (c *CSVLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
 			record = append(record, fmt.Sprintf("%v", data[h]))
 		}
 	}
+
 	writer.Write(record)
 	writer.Flush()
 	return b.Bytes(), nil
@@ -122,7 +128,7 @@ type RawLineCodec struct{}
 func (c *RawLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 	json_data := map[string]interface{}{}
 	json_data["bytes"] = data
-	log.Info(data)
+	log.Debug(data)
 	return json_data, nil
 }
 

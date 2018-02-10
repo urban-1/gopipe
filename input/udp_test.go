@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestUDP(t *testing.T) {
+func TestUDPJSON(t *testing.T) {
 	in, out := GetChannels()
 	mid := make(chan *core.Event, 1)
 
@@ -23,12 +23,14 @@ func TestUDP(t *testing.T) {
 		{"target": "localhost", "port": 10000}
 	`))
 
+
 	go cin.Run()
 	time.Sleep(time.Duration(1) * time.Second)
 	go cout.Run()
 
 	// Test UDP as middle stage
 	e := <-mid
+
 	tmp, _ := e.Data["a"].(json.Number).Int64()
 	if tmp != 1 {
 		t.Error("UDP MID error: I was expecting a: 1")
@@ -39,6 +41,45 @@ func TestUDP(t *testing.T) {
 	e = <-in
 	tmp, _ = e.Data["a"].(json.Number).Int64()
 	if tmp != 1 {
+		t.Error("UDP IO error: I was expecting a: 1")
+		t.Error(e.Data)
+	}
+
+}
+
+
+func TestUDPCSV(t *testing.T) {
+	in, out := GetChannels()
+	mid := make(chan *core.Event, 1)
+
+	out <- GetEvent(`{"a": 1}`)
+
+	cin := NewUDPCSVInput(nil, in, GetConfig(`
+		{"listen": "127.0.0.1", "port": 10001, "headers": ["a"]}
+	`))
+
+	cout := output.NewUDPCSVOutput(out, mid, GetConfig(`
+		{"target": "localhost", "port": 10001, "headers": ["a"]}
+	`))
+
+	go cin.Run()
+	time.Sleep(time.Duration(1) * time.Second)
+	go cout.Run()
+
+	// Test UDP as middle stage
+	e := <-mid
+
+    // Here we are dealing with json.... (from GetEvent)
+	tmp, _ := e.Data["a"].(json.Number).Int64()
+	if tmp != 1 {
+		t.Error("UDP MID error: I was expecting a: 1")
+		t.Error(e.Data)
+	}
+
+	// Test socket
+	e = <-in
+	// Here we are dealing with int64, since CSVLineCodec.Convert is set
+	if e.Data["a"].(int64) != 1 {
 		t.Error("UDP IO error: I was expecting a: 1")
 		t.Error(e.Data)
 	}
