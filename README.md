@@ -271,6 +271,9 @@ input, component `4` above is the 3rd in `proc` section.
 
 -   Only one input is supported at the moment but this might change
 -   A bit immature framework :) we need more components
+-   JSON: Decoding with `UseNumber()` is needed for correct output, however,
+    it breaks `govaluate` so when comparing you have to use `json_to_float64()`.
+    See `TestIf` for example...
 
 ## Developers
 
@@ -286,6 +289,3 @@ jobs and maybe codecs!
 
 As always, comments, suggestions, documentation, bug reports, etc are more than
 welcome :)
-
-[Also, you might have detected that this code has no tests! We are new to Go and
-we are still figuring this out...]
