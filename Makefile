@@ -2,19 +2,20 @@ KAFKA_VERSION := v0.11.3
 GO_FILES := $(shell find . -iname '*.go' -type f | grep -v /build/)
 MODS :=./input ./proc ./output
 
-.PHONY: all gopipe librdkafka fmt tests show_coverage local_rdkafka
+.PHONY: all gopipe librdkafka fmt tests show_coverage rdkafka
 
-all: gopipe
+all: rdkafka gopipe
 
-gopipe: local_rdkafka
+gopipe:
+	go build 
 
-local_rdkafka:
+rdkafka:
 	-@mkdir -p build/src
 	-@mkdir -p build/local
 	@(  cd build/src; \
 		git clone https://github.com/edenhill/librdkafka.git; \
 		cd librdkafka; \
-		git pull && \
+		git fetch origin && \
 		git checkout $(KAFKA_VERSION) && \
 		./configure --prefix=$(CURDIR)/build/local && \
 		make && \
