@@ -26,6 +26,9 @@ matrix:
 notifications:
   email: false
 
+# env:
+#     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
 # Anything in before_script that returns a nonzero exit code will
 # flunk the build and immediately stop. It's sorta like having
 # set -e enabled in bash.
@@ -37,7 +40,7 @@ before_script:
       git clone https://github.com/edenhill/librdkafka.git;
       cd librdkafka;
       git checkout $KAFKA_VERSION;
-      ./configure --prefix=/home/travis/gopath/src/github.com/urban-1/gopipe/build/local &&
+      ./configure  &&
       make &&
       sudo make install)
   - MODS="./input ./proc ./output"
