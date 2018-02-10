@@ -43,8 +43,10 @@ vet:
 tests: fmt vet
 	-@mkdir -p build/coverage
 	@go get -u github.com/wadey/gocovmerge
-	@(for mod in $(MODS); do \
-			LD_LIBRARY_PATH=$(CURDIR)/build/local/lib go test -v -cover -coverprofile=build/coverage/$$mod.out ./$$mod; \
+	(   export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \
+		export LD_LIBRARY_PATH=$(CURDIR)/build/local/lib; \
+		for mod in $(MODS); do \
+			go test -v -cover -coverprofile=build/coverage/$$mod.out ./$$mod || exit 1; \
 		done;\
 	)
 	@gocovmerge build/coverage/* > build/coverage/all.out
