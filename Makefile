@@ -46,7 +46,7 @@ tests: fmt vet
 	(   export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \
 		export LD_LIBRARY_PATH=$(CURDIR)/build/local/lib; \
 		for mod in $(MODS); do \
-			go test -v -cover -coverprofile=build/coverage/$$mod.out ./$$mod || exit 1; \
+			LD_PRELOAD=$(CURDIR)/build/local/lib/librdkafka.so.1 go test -v -cover -coverprofile=build/coverage/$$mod.out ./$$mod || exit 1; \
 		done;\
 	)
 	@gocovmerge build/coverage/* > build/coverage/all.out
