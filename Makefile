@@ -2,12 +2,23 @@ KAFKA_VERSION := v0.11.3
 GO_FILES := $(shell find . -iname '*.go' -type f | grep -v /build/)
 MODS :=./input ./proc ./output
 
-.PHONY: all gopipe librdkafka fmt tests show_coverage rdkafka
+.PHONY: all gopipe librdkafka fmt tests show_coverage rdkafka help
+
+
+help:
+	@echo ""
+	@echo "Available targets:"
+	@echo
+	@echo "  rdkafka         Build librdkafka locally"
+	@echo "  gopipe          Build gopipe"
+	@echo "  tests           Run tests (includes fmt and vet)"
+	@echo "  show_coverage   Show coverage results"
+	@echo
 
 all: rdkafka gopipe
 
 gopipe:
-	go build 
+	go build
 
 rdkafka:
 	-@mkdir -p build/src
