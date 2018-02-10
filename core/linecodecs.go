@@ -72,7 +72,7 @@ func (c *CSVLineCodec) FromBytes(data []byte) (map[string]interface{}, error) {
 	var tmp int64
 	var tmpf float64
 	for i, v := range record {
-		
+
 		if !c.Convert {
 			json_data[c.Headers[i]] = v
 			continue
@@ -147,7 +147,7 @@ func (c *StringLineCodec) FromBytes(data []byte) (map[string]interface{}, error)
 }
 
 func (c *StringLineCodec) ToBytes(data map[string]interface{}) ([]byte, error) {
-	return data["message"].([]byte), nil
+	return []byte(data["message"].(string)), nil
 }
 
 // Helper to extract a []interface}{} to a []string

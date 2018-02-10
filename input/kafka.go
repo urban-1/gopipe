@@ -129,7 +129,7 @@ func NewKafkaCSVInput(inQ chan *core.Event, outQ chan *core.Event, cfg core.Conf
 	m.Tag = "IN-KAFKA-CSV"
 
 	// Change to CSV
-	c := &core.CSVLineCodec{nil, ","[0], true}
+	c := &core.CSVLineCodec{Headers: nil, Separator: ","[0], Convert: true}
 	cfgbytes, _ := json.Marshal(cfg)
 	json.Unmarshal(cfgbytes, c)
 	log.Error(c)
