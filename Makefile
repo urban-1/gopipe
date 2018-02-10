@@ -45,8 +45,9 @@ tests: fmt vet
 	@go get -u github.com/wadey/gocovmerge
 	(   export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \
 		export LD_LIBRARY_PATH=$(CURDIR)/build/local/lib; \
+		LD_PRELOAD=$(CURDIR)/build/local/lib/librdkafka.so.1 go build github.com/confluentinc/confluent-kafka-go/kafka; \
 		for mod in $(MODS); do \
-			LD_PRELOAD=$(CURDIR)/build/local/lib/librdkafka.so.1 go test -v -cover -coverprofile=build/coverage/$$mod.out ./$$mod || exit 1; \
+			go test -v -cover -coverprofile=build/coverage/$$mod.out ./$$mod || exit 1; \
 		done;\
 	)
 	@gocovmerge build/coverage/* > build/coverage/all.out
