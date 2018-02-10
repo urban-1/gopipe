@@ -31,6 +31,8 @@ notifications:
 # set -e enabled in bash.
 before_script:
   - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/) # All the .go files, excluding vendor/
+  - GO_IMPORTS=$(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' ./... | sort | uniq | grep -v golang-samples)
+  - go get -u -v -d $GO_IMPORTS
 
 # script always run to completion (set +e). All of these code checks are must haves
 # in a modern Go project.
