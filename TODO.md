@@ -15,10 +15,13 @@
 -   Create a prometheus metrics end-point
 -   External component loading on runtime (given a folder path) if possible so
     custom modules can be easily created and used
+-   Allow multiple input components
 
 ## Component Ideas
 
--   Add OS command input component (periodically running something)
+-   Add OS command input component (periodically running something). Note that
+    this can be implemented atm with a `task` that pipes to `netcat` if you are
+    using TCP/UDP input.
 -   SQL output component, maybe via https://github.com/volatiletech/sqlboiler
 -   ElasticSearch output component
 -   Kafka output component
