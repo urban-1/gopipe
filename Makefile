@@ -22,7 +22,9 @@ setup_kafka_go:
 	(cd $$GOPATH/src/github.com/confluentinc/confluent-kafka-go && git checkout $(GO_KAFKA_VERSION))
 
 gopipe: setup_kafka_go
-	go build
+	(export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \
+        export LD_LIBRARY_PATH=$(CURDIR)/build/local/lib; \
+	go build)
 
 rdkafka:
 	-@mkdir -p build/src
