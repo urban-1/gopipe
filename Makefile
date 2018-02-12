@@ -18,8 +18,10 @@ help:
 
 all: rdkafka gopipe
 
-gopipe:
+setup_kafka_go:
 	(cd $$GOPATH/src/github.com/confluentinc/confluent-kafka-go && git checkout $(GO_KAFKA_VERSION))
+
+gopipe: setup_kafka_go
 	go build
 
 rdkafka:
@@ -41,7 +43,7 @@ fmt:
 vet:
 	@go vet ./...
 
-tests: fmt vet
+tests: setup_kafka_go fmt vet
 	-@mkdir -p build/coverage
 	@go get -u github.com/wadey/gocovmerge
 	(   export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \
