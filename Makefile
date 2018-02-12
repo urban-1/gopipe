@@ -1,4 +1,5 @@
 KAFKA_VERSION := v0.11.3
+GO_KAFKA_VERSION := v0.11.0
 GO_FILES := $(shell find . -iname '*.go' -type f | grep -v /build/)
 MODS :=./input ./proc ./output
 
@@ -18,6 +19,7 @@ help:
 all: rdkafka gopipe
 
 gopipe:
+	(cd $$GOPATH/src/github.com/confluentinc/confluent-kafka-go && git checkout $(GO_KAFKA_VERSION))
 	go build
 
 rdkafka:
@@ -35,7 +37,6 @@ rdkafka:
 
 fmt:
 	@go fmt ./...
-
 
 vet:
 	@go vet ./...
