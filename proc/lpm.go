@@ -40,7 +40,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/asergeyev/nradix"
+	// "github.com/asergeyev/nradix"
+	"github.com/b1v1r/nradix"
 	log "github.com/sirupsen/logrus"
 	"github.com/urban-1/gopipe/core"
 )
@@ -126,7 +127,7 @@ func (p *LPMProc) Run() {
 
 	for !p.MustStop {
 		// Do not read until we lock the tree!
-		log.Debug("LPMProc Reading ", p.MustStop)
+		log.Debug("LPMProc Reading stop=", p.MustStop)
 		e, err := p.ShouldRun()
 		if err != nil {
 			continue
@@ -187,7 +188,7 @@ func (p *LPMProc) loadTree() {
 	}
 	p.TreeLock.Lock()
 
-	p.Tree = nradix.NewTree(100)
+	p.Tree = nradix.NewTree(0)
 
 	log.Warn("LPM: Reading file")
 	reader := bufio.NewReader(f)
@@ -196,8 +197,15 @@ func (p *LPMProc) loadTree() {
 
 	line, _, err := reader.ReadLine()
 	for err != io.EOF {
+		// Skip comments
+		if len(line) > 0 && string(line[0]) == "#" {
+			line, _, err = reader.ReadLine()
+			continue
+		}
+
 		json_data := map[string]interface{}{}
-		parts := bytes.Split(line, []byte(" "))
+		parts := bytes.SplitAfterN(line, []byte(" "), 2)
+		parts[0] = bytes.Trim(parts[0], " ")
 		meta := bytes.Join(parts[1:], []byte(""))
 
 		d := json.NewDecoder(bytes.NewReader(meta))
@@ -205,11 +213,16 @@ func (p *LPMProc) loadTree() {
 
 		if d.Decode(&json_data) != nil {
 			log.Error("LPM: Unable to parse prefix meta-data: ", string(meta))
+			continue
 		}
 
 		json_data["prefix"] = string(parts[0])
-		p.Tree.AddCIDRb(parts[0], json_data)
-		count += 1
+		err = p.Tree.AddCIDRb(parts[0], json_data)
+		if err != nil {
+			log.Error(err)
+		} else {
+			count += 1
+		}
 		line, _, err = reader.ReadLine()
 	}
 

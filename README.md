@@ -2,6 +2,24 @@
 
 A processing pipe-line (similar to logstash) written in Go
 
+## Quick-Start
+
+There is a Makefile you can use to quickly build and start working on this
+project:
+
+```
+$ make help
+
+Available targets:
+
+  rdkafka         Build librdkafka locally
+  gopipe          Build gopipe
+  tests           Run tests (includes fmt and vet)
+  show_coverage   Show coverage results
+```
+
+
+
 ## Architecture
 
 Our goal is to define a pipeline where events are received and processed in a
@@ -267,10 +285,13 @@ The component index is defined as the order of this component in config
 **including input components**. Given that at the moment we only support one
 input, component `4` above is the 3rd in `proc` section.
 
-# Limitations
+## Limitations
 
 -   Only one input is supported at the moment but this might change
 -   A bit immature framework :) we need more components
+-   JSON: Decoding with `UseNumber()` is needed for correct output, however,
+    it breaks `govaluate` so when comparing you have to use `json_to_float64()`.
+    See `TestIf` for example...
 
 ## Developers
 
@@ -284,8 +305,6 @@ jobs and maybe codecs!
 -   Codecs: Have a quick look into `linecodecs.go`. One can easily implement new
     line encoders/decoders. These can then be plugged into input/output modules
 
-As always, comments, suggestions, documentation, bug reports, etc are more than
+Not sure with what to help? have a look at [TODO.md](TODO.md) As always,
+comments, suggestions, documentation, bug reports, etc are more than
 welcome :)
-
-[Also, you might have detected that this code has no tests! We are new to Go and
-we are still figuring this out...]

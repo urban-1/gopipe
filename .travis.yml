@@ -1,0 +1,34 @@
+language: go
+
+go:
+  - 1.9
+  # - master
+
+
+matrix:
+  # It's ok if our code fails on unstable development versions of Go.
+  allow_failures:
+    - go: master
+  # Don't wait for tip tests to finish. Mark the test run green if the
+  # tests pass on the stable versions of Go.
+  fast_finish: true
+
+# Don't email me the results of the test runs.
+notifications:
+  email: false
+
+# Anything in before_script that returns a nonzero exit code will
+# flunk the build and immediately stop. It's sorta like having
+# set -e enabled in bash.
+before_script:
+  - make rdkafka
+  - MODS="./input ./proc ./output"
+  - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/) # All the .go files, excluding vendor/
+  - GO_IMPORTS=$(go list -f '{{join .Imports "\n"}}{{"\n"}}{{join .TestImports "\n"}}' $MODS | sort | uniq | grep -v gopipe)
+  - go get -u -v -d $GO_IMPORTS
+
+# script always run to completion (set +e). All of these code checks are must haves
+# in a modern Go project.
+script:
+  - test -z "$(gofmt -s -l $GO_FILES)"       # Fail if a .go file hasn't been formatted with gofmt
+  - make tests
