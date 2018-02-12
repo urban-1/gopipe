@@ -1,4 +1,5 @@
 # GoPipe
+<img src="https://travis-ci.org/urban-1/gopipe.svg?branch=master"/>
 
 A processing pipe-line (similar to logstash) written in Go
 
