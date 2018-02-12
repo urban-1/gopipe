@@ -21,7 +21,7 @@ func TestUDPJSON(t *testing.T) {
 	`))
 
 	cout := output.NewUDPJSONOutput(out, mid, GetConfig(`
-		{"target": "localhost", "port": 10000}
+		{"target": "127.0.0.1", "port": 10000}
 	`))
 
 	go cin.Run()
@@ -58,7 +58,7 @@ func TestUDPCSV(t *testing.T) {
 	`))
 
 	cout := output.NewUDPCSVOutput(out, mid, GetConfig(`
-		{"target": "localhost", "port": 10001, "headers": ["a"]}
+		{"target": "127.0.0.1", "port": 10001, "headers": ["a"]}
 	`))
 
 	go cin.Run()
@@ -96,7 +96,7 @@ func TestUDPRaw(t *testing.T) {
 	`))
 
 	cout := output.NewUDPRawOutput(out, mid, GetConfig(`
-		{"target": "localhost", "port": 10002}
+		{"target": "127.0.0.1", "port": 10002}
 	`))
 
 	go cin.Run()
@@ -133,7 +133,7 @@ func TestUDPStr(t *testing.T) {
 	`))
 
 	cout := output.NewUDPStrOutput(out, mid, GetConfig(`
-		{"target": "localhost", "port": 10003}
+		{"target": "127.0.0.1", "port": 10003}
 	`))
 
 	go cin.Run()
