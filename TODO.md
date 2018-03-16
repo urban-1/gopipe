@@ -16,6 +16,7 @@
 -   External component loading on runtime (given a folder path) if possible so
     custom modules can be easily created and used
 -   Allow multiple input components
+-   Allow for YAML config
 
 ## Component Ideas
 
@@ -24,4 +25,5 @@
     using TCP/UDP input.
 -   SQL output component, maybe via https://github.com/volatiletech/sqlboiler
 -   ElasticSearch output component
+-   InfluxDB maybe?
 -   Kafka output component

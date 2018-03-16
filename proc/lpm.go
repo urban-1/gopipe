@@ -213,6 +213,7 @@ func (p *LPMProc) loadTree() {
 
 		if d.Decode(&json_data) != nil {
 			log.Error("LPM: Unable to parse prefix meta-data: ", string(meta))
+			line, _, err = reader.ReadLine()
 			continue
 		}
 
