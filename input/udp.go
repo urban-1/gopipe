@@ -97,7 +97,7 @@ func (p *UDPJSONInput) Run() {
 		p.PrintStats()
 
 	}
-	log.Info("%s: Stopping...", p.Tag)
+	log.Infof("%s : Stopping...", p.Tag)
 }
 
 /*
