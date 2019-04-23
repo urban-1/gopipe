@@ -1,6 +1,6 @@
 KAFKA_VERSION := v0.11.3
 GO_KAFKA_VERSION := v0.11.0
-GO_FILES := $(shell find . -iname '*.go' -type f | grep -v /build/)
+GO_FILES := $(shell find . -iname '*.go' -type f | grep -v /build/ | grep -v /vendor/)
 MODS :=./input ./proc ./output
 
 .PHONY: all gopipe librdkafka fmt tests show_coverage rdkafka help
@@ -18,10 +18,7 @@ help:
 
 all: rdkafka gopipe
 
-setup_kafka_go:
-	(cd $$GOPATH/src/github.com/confluentinc/confluent-kafka-go && git checkout $(GO_KAFKA_VERSION))
-
-gopipe: setup_kafka_go
+gopipe:
 	(export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \
         export LD_LIBRARY_PATH=$(CURDIR)/build/local/lib; \
 	go build)
@@ -40,12 +37,12 @@ rdkafka:
 	)
 
 fmt:
-	@go fmt ./...
+	@gofmt -s -l $(GO_FILES)
 
 vet:
 	@go vet ./...
 
-tests: setup_kafka_go fmt vet
+tests: fmt vet
 	-@mkdir -p build/coverage
 	@go get -u github.com/wadey/gocovmerge
 	(   export PKG_CONFIG_PATH=$(CURDIR)/build/local/lib/pkgconfig; \

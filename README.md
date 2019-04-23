@@ -5,6 +5,15 @@ A processing pipe-line (similar to logstash) written in Go
 
 ## Quick-Start
 
+Clone and install dependencies:
+
+```
+mkdir -p $GOPATH/src/github.com/urban-1
+cd $GOPATH/src/github.com/urban-1
+git clone git@github.com:urban-1/gopipe.git
+dep ensure
+```
+
 There is a Makefile you can use to quickly build and start working on this
 project:
 
@@ -228,8 +237,8 @@ Receive on a TCP socket listening for JSON line:
             "reload_minutes": 1440,
             "in_fields": ["src", "dst"],
             "out_fields": [
-                {"newkey": "sky_{{in_field}}_prefix", "metakey": "prefix"},
-                {"newkey": "sky_{{in_field}}_asn", "metakey": "asn"}
+                {"newkey": "_{{in_field}}_prefix", "metakey": "prefix"},
+                {"newkey": "_{{in_field}}_asn", "metakey": "asn"}
             ]
         }
     ],
